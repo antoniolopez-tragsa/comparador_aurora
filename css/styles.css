@@ -8,6 +8,8 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    transition: background-color 0.3s ease;
+    /* Transición suave en el color de fondo */
 }
 
 /* Encabezado */
@@ -16,6 +18,8 @@ header {
     color: #fff;
     padding: 20px;
     text-align: center;
+    transition: background-color 0.3s ease;
+    /* Transición suave al pasar el mouse */
 }
 
 header h1 {
@@ -30,8 +34,9 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* Centra el contenido verticalmente */
     padding: 20px;
+    transition: transform 0.3s ease;
+    /* Transición al mover la página */
 }
 
 /* Formulario */
@@ -44,6 +49,8 @@ form {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    transition: all 0.3s ease;
+    /* Transición de todos los efectos de estilo */
 }
 
 form label {
@@ -57,6 +64,8 @@ form input[type="file"] {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
+    transition: all 0.3s ease;
+    /* Transición de las entradas de archivo */
 }
 
 form button {
@@ -70,51 +79,75 @@ form button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    /* Transición del color de fondo y el efecto de botón */
 }
 
 form button:hover {
     background-color: #cc3e00;
-}
-
-/* Mensaje de error */
-#errorMessage {
-    display: none;
-    color: red;
-    margin-top: 10px;
-    font-weight: bold;
+    transform: scale(1.05);
+    /* Escalado suave al pasar el ratón */
 }
 
 /* Contenedor de resultados */
 #resultContainer {
     display: none;
     width: 100%;
-    max-width: 600px;
+    max-width: 800px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     color: #333;
+    transition: all 0.3s ease;
+    /* Transición general */
 }
 
-#resultContainer h2 {
-    margin-top: 0;
-    font-size: 1.5em;
-    color: #ff4e00;
-    border-bottom: 2px solid #ff4e00;
-    padding-bottom: 8px;
+#resultContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    transition: transform 0.3s ease;
+    /* Transición al cargar la tabla */
 }
 
-#resultContainer p {
-    font-size: 1em;
-    margin: 10px 0;
-    line-height: 1.6;
-    color: #555;
+#resultContainer table th,
+#resultContainer table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+    transition: background-color 0.3s ease;
+    /* Transición en el fondo de celdas */
 }
 
-#resultContainer p strong {
-    color: #ff4e00;
+#resultContainer table th {
+    background-color: #ff4e00;
+    color: #fff;
+    font-weight: bold;
+}
+
+#resultContainer table tr:nth-child(even) {
+    background-color: #f2f2f2;
+    transition: background-color 0.3s ease;
+}
+
+#resultContainer table tr:nth-child(odd) {
+    background-color: #e0e0e0;
+    transition: background-color 0.3s ease;
+}
+
+#resultContainer table tr:hover {
+    background-color: #d0d0d0;
+    transform: scale(1.02);
+    /* Escalado suave en hover */
+}
+
+#resultContainer table td {
+    word-wrap: break-word;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+    /* Transición en celdas */
 }
 
 /* Pie de página pegado al fondo */
@@ -124,13 +157,31 @@ footer {
     text-align: center;
     padding: 15px 0;
     width: 100%;
+    transition: background-color 0.3s ease;
 }
 
 footer a {
     color: #ffffff;
     text-decoration: underline;
+    transition: color 0.3s ease;
 }
 
 footer a:hover {
     color: #ccc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    form {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    #resultContainer {
+        max-width: 100%;
+    }
+
+    table {
+        font-size: 0.9em;
+    }
 }
