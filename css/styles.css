@@ -192,6 +192,18 @@
     color: #ccc;
 }
 
+/* Estilos para los filtros */
+.filter__label {
+    display: block; /* Hace que los checkboxes se apilen verticalmente */
+    margin-bottom: var(--spacing-small); /* Espaciado entre checkboxes */
+    font-weight: bold;
+    color: var(--color-text);
+}
+
+.filter-checkbox {
+    margin-right: var(--spacing-small); /* Espaciado entre checkbox y texto */
+}
+
 /* Scroll horizontal y ajuste de tablas para pantallas pequeñas */
 @media (max-width: 768px) {
     .results {
