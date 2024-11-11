@@ -11,38 +11,43 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
 </head>
 
-<body>
+<body class="page">
     <!-- Encabezado -->
-    <header>
-        <h1>Comparador de listados de incidencias en AURORA</h1>
+    <header class="header">
+        <h1 class="header__title">Comparador de listados de incidencias en AURORA</h1>
     </header>
 
     <!-- Formulario -->
-    <main>
-        <form id="fileForm">
-            <label for="file1">Seleccione el primer archivo:</label>
-            <input type="file" id="file1" name="file1" accept=".xls" required>
+    <main class="main">
+        <form id="fileForm" class="form" aria-labelledby="formTitle">
+            <fieldset class="form__fieldset">
+                <legend id="formTitle" class="form__legend">Cargar ficheros</legend>
 
-            <label for="file2">Seleccione el segundo archivo:</label>
-            <input type="file" id="file2" name="file2" accept=".xls">
+                <label for="file1" class="form__label">Seleccione el primer archivo:</label>
+                <input type="file" id="file1" name="file1" class="form__input" accept=".xls" required>
 
-            <button type="submit" class="btn-submit" aria-label="Visualizar Archivos">Visualizar</button>
+                <label for="file2" class="form__label">Seleccione el segundo archivo:</label>
+                <input type="file" id="file2" name="file2" class="form__input" accept=".xls">
+            </fieldset>
+
+            <button type="submit" class="form__button" aria-label="Visualizar Archivos">Visualizar</button>
 
             <!-- Mensaje de error -->
-            <div id="errorMessage" style="display:none; color:red;">Error: Por favor, cargue dos archivos .xls válidos.
-            </div>
+            <div id="errorMessage" class="form__error-message" aria-live="polite">Error: Por favor, cargue dos archivos
+                .xls válidos.</div>
         </form>
 
         <!-- Resultados de la comparación -->
-        <div id="resultContainer" style="display:none;">
-
-        </div>
+        <section id="resultContainer" class="results" aria-live="polite">
+            <!-- Tabla dinámica insertada aquí -->
+        </section>
     </main>
 
     <!-- Pie -->
-    <footer>
-        <p>Desarrollado por
-            <a href="mailto:antonio.angel.lopez.fernandez@gmail.com">Antonio Ángel López Fernández</a>
+    <footer class="footer">
+        <p class="footer__text">Desarrollado por
+            <a href="mailto:antonio.angel.lopez.fernandez@gmail.com" class="footer__link">Antonio Ángel López
+                Fernández</a>
         </p>
     </footer>
 
