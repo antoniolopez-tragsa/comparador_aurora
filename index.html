@@ -21,7 +21,7 @@
     <main class="main">
         <form id="fileForm" class="form" aria-labelledby="formTitle">
             <fieldset class="form__fieldset">
-                <legend id="formTitle" class="form__legend">Cargar ficheros</legend>
+                <legend id="formTitle" class="form__legend">Cargar Archivos</legend>
 
                 <label for="file1" class="form__label">Seleccione el primer archivo:</label>
                 <input type="file" id="file1" name="file1" class="form__input" accept=".xls" required>
@@ -32,15 +32,24 @@
 
             <button type="submit" class="form__button" aria-label="Visualizar Archivos">Visualizar</button>
 
-            <!-- Mensaje de error -->
-            <div id="errorMessage" class="form__error-message" aria-live="polite">Error: Por favor, cargue dos archivos
-                .xls válidos.</div>
+            <div id="errorMessage" class="form__error-message" aria-live="polite"></div>
         </form>
 
-        <!-- Resultados de la comparación -->
-        <section id="resultContainer" class="results" aria-live="polite">
-            <!-- Tabla dinámica insertada aquí -->
-        </section>
+        <!-- Opciones de filtro -->
+        <div id="filterOptions" style="display: none; margin-top: 20px;">
+            <label>
+                <input type="checkbox" id="showClaims" class="filter-checkbox">
+                Mostrar reclamaciones
+            </label>
+            <label style="margin-left: 20px;">
+                <input type="checkbox" id="showAudits" class="filter-checkbox">
+                Mostrar solicitudes susceptibles de auditoría
+            </label>
+        </div>
+
+        <!-- Contenedor de resultados -->
+        <div id="resultContainer" class="results" aria-live="polite"></div>
+
     </main>
 
     <!-- Pie -->

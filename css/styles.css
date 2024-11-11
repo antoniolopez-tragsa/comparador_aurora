@@ -111,13 +111,15 @@
 .results {
     display: none;
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
     padding: var(--spacing-medium);
     border: 1px solid var(--color-border);
     border-radius: 8px;
     background-color: var(--color-white);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all var(--transition-speed) ease;
+    overflow-x: auto;
+    /* Habilitar scroll horizontal */
 }
 
 .results--visible {
@@ -154,8 +156,22 @@
 }
 
 .results__table tr:hover {
-    background-color: #d0d0d0;
+    background-color: #ffe5d1;
     transform: scale(1.02);
+}
+
+.results__table td:hover {
+    background-color: #ffd9b3;
+    transform: scale(1.03);
+}
+
+.empty-cell {
+    background-color: #ffcccc;
+    transition: background-color 0.3s ease;
+}
+
+.empty-cell:hover {
+    background-color: #ffb3b3;
 }
 
 /* Pie de página */
@@ -176,61 +192,20 @@
     color: #ccc;
 }
 
-/* Estilos generales de la tabla */
-.excel-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    transition: all 0.3s ease;
-    /* Transición para cambios generales */
-}
+/* Scroll horizontal y ajuste de tablas para pantallas pequeñas */
+@media (max-width: 768px) {
+    .results {
+        overflow-x: auto;
+    }
 
-.excel-table th,
-.excel-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    /* Transición para fondo y transformación */
-}
+    .results__table th,
+    .results__table td {
+        font-size: 0.9em;
+        /* Reducir el tamaño de la fuente */
+    }
 
-/* Estilo para cabecera */
-.excel-table th {
-    background-color: #ff4e00;
-    color: white;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    /* Transición para el hover de cabecera */
-}
-
-/* Efecto hover para las filas */
-.excel-table tr {
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    /* Suavizar cambios de color y escala */
-}
-
-.excel-table tr:hover {
-    background-color: #ffe5d1;
-    /* Color de fondo al hacer hover en una fila */
-    transform: scale(1.02);
-    /* Ligero zoom */
-}
-
-/* Efecto hover para las celdas */
-.excel-table td:hover {
-    background-color: #ffd9b3;
-    /* Color de fondo de celda al hacer hover */
-    transform: scale(1.03);
-    /* Zoom ligero en celda */
-}
-
-/* Estilo para las celdas vacías */
-.empty-cell {
-    background-color: #ffcccc;
-    transition: background-color 0.3s ease;
-}
-
-.empty-cell:hover {
-    background-color: #ffb3b3;
-    /* Cambiar el color de celdas vacías al hacer hover */
+    .form__button {
+        font-size: 0.9em;
+        /* Ajustar botones también */
+    }
 }
