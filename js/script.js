@@ -31,6 +31,11 @@ document.getElementById('fileForm').addEventListener('submit', function (event) 
 
             createTable(rows); // Crear la tabla con los datos extraídos
 
+            // Desmarcar los checkbox por defecto
+            document.getElementById('showClaims').checked = false;
+            document.getElementById('showAudits').checked = false;
+
+
             // Mostrar el fieldset con los filtros después de cargar la tabla
             document.getElementById('filterOptions').style.display = 'block';
 
