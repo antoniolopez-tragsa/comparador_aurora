@@ -62,8 +62,8 @@ function createTable(data) {
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    // Definir las columnas que queremos mostrar (índices de columna: 12, 0, 1, 4, 5 y 11)
-    const columnsToShow = [12, 0, 1, 4, 5, 11];
+    // Definir las columnas que queremos mostrar (índices de columna: 12, 3, 0, 1, 4, 5, 11 y 15)
+    const columnsToShow = [12, 3, 0, 1, 4, 5, 11, 15];
 
     // Añadir las celdas de la cabecera
     columnsToShow.forEach(colIndex => {
