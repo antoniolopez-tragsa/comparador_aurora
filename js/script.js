@@ -81,7 +81,7 @@ function createTable(data) {
     const body = document.createElement('tbody');
 
     // Iterar sobre cada fila de datos y crear las celdas correspondientes
-    data.slice(1).forEach((row, rowIndex) => {
+    data.slice(1).forEach(row => {
         const tr = document.createElement('tr');
 
         // Iterar sobre las columnas seleccionadas para la tabla
