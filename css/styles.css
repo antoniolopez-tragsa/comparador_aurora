@@ -133,6 +133,16 @@
     transition: transform var(--transition-speed) ease;
 }
 
+.results__table a {
+    color: var(--color-white); /* Color del enlace del footer */
+    text-decoration: underline; /* Subrayado para consistencia */
+    transition: color var(--transition-speed) ease; /* Transición suave para cambios de color */
+}
+
+.results__table a:hover {
+    color: #ccc; /* Color en hover similar al footer */
+}
+
 .results__table th,
 .results__table td {
     padding: var(--spacing-small);
