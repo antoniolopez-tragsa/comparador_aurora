@@ -1,4 +1,4 @@
-// Añadir un event listener al formulario
+// Añadir un event listener al formulario para manejar la carga del archivo
 document.getElementById('fileForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Evitar recarga de página
 
@@ -15,9 +15,10 @@ document.getElementById('fileForm').addEventListener('submit', function (event) 
     reader.onload = function (e) {
         try {
             const data = e.target.result;
-            const workbook = XLSX.read(data, { type: 'binary' });
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const workbook = XLSX.read(data, { type: 'binary' }); // Leer el archivo Excel en formato binario
+            const sheet = workbook.Sheets[workbook.SheetNames[0]]; // Obtener la primera hoja del archivo
 
+            // Convertir la hoja en un array de objetos
             const rows = XLSX.utils.sheet_to_json(sheet, {
                 header: 1, // Utilizar la primera fila como cabecera
                 defval: '' // Reemplazar valores `undefined` con cadena vacía
@@ -51,41 +52,61 @@ function filterTable(data) {
     const showClaims = document.getElementById('showClaims').checked;
     const showAudits = document.getElementById('showAudits').checked;
 
-    let filteredData = data.slice(1); // Filas sin cabecera
+    let filteredData = data.slice(1); // Excluir la cabecera
 
-    if (showClaims) {
-        filteredData = filteredData.filter(row => row[11] && row[11].includes('R')); // Filtrar por "R" en columna 11
+    if (showClaims || showAudits) {
+        filteredData = filteredData.filter(row => {
+            const isClaim = row[11] && row[11].includes('R'); // Verificar si es una reclamación (columna 11 contiene "R")
+            const tRespSeconds = convertToSeconds(row[0]); // T. Resp en segundos (columna 0)
+            const tResolSeconds = convertToSeconds(row[1]); // T. Resol en segundos (columna 1)
+            const maxTRespSeconds = convertToSeconds(row[4]); // Máximo T. Resp en segundos (columna 4)
+            const maxTResolSeconds = convertToSeconds(row[5]); // Máximo T. Resol en segundos (columna 5)
+
+            // Mostrar siempre las reclamaciones si el primer checkbox está activo
+            if (showClaims && isClaim) return true;
+
+            // Aplicar criterios de auditoría solo si el segundo checkbox está activo
+            if (showAudits) {
+                // Excluir filas si los máximos son 0
+                if (maxTRespSeconds === 0 || maxTResolSeconds === 0) return false;
+
+                // Verificar si los tiempos exceden los máximos permitidos
+                const exceedsMaxResp = tRespSeconds > maxTRespSeconds;
+                const exceedsMaxResol = tResolSeconds >= maxTResolSeconds;
+
+                return exceedsMaxResp || exceedsMaxResol; // Cumple el criterio de auditoría
+            }
+
+            return false; // Excluir si no cumple ningún criterio
+        });
     }
 
-    if (showAudits) {
-        filteredData = filteredData.filter(row => row[6] === 'Susceptible de Auditoría'); // Filtrar por "Susceptible de Auditoría" en columna 6
-    }
-
-    createTable([data[0], ...filteredData]); // Reconstruir la tabla con los datos filtrados
+    createTable([data[0], ...filteredData]); // Reconstruir la tabla con los datos filtrados, manteniendo la cabecera
 }
 
-// Función para crear la tabla con los datos
+// Función para crear la tabla con los datos proporcionados
 function createTable(data) {
     const resultContainer = document.getElementById('resultContainer');
     resultContainer.innerHTML = ''; // Limpiar resultados previos
 
     const table = document.createElement('table');
     table.classList.add('results__table');
-    table.setAttribute('role', 'table');
+    table.setAttribute('role', 'table'); // Accesibilidad
 
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    const columnsToShow = [12, 3, 0, 1, 4, 5, 11, 15];
-    const timeColumns = [0, 1, 4, 5];
+    const columnsToShow = [12, 0, 1, 4, 5, 11]; // Índices de columnas a mostrar
+    const timeColumns = [0, 1, 4, 5]; // Columnas que contienen tiempos
 
     columnsToShow.forEach((colIndex) => {
         const th = document.createElement('th');
-        th.textContent = data[0][colIndex] || `Columna ${colIndex + 1}`;
-        th.setAttribute('scope', 'col');
+        th.textContent = data[0][colIndex] || `Columna ${colIndex + 1}`; // Nombre de columna o índice
+        th.setAttribute('scope', 'col'); // Accesibilidad
         headerRow.appendChild(th);
 
         if (timeColumns.includes(colIndex)) {
+            // Añadir columnas adicionales para mostrar valores en segundos
             const thSeconds = document.createElement('th');
             thSeconds.textContent = `${data[0][colIndex]} (Segundos)`;
             thSeconds.setAttribute('scope', 'col');
@@ -104,12 +125,22 @@ function createTable(data) {
 
         columnsToShow.forEach((colIndex) => {
             const td = document.createElement('td');
-            td.textContent = row[colIndex] || '';
+
+            if (colIndex === 12) { // Código de petición (columna 12)
+                const link = document.createElement('a');
+                link.href = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${row[colIndex]}`;
+                link.textContent = row[colIndex];
+                link.target = '_blank'; // Abrir en nueva pestaña
+                td.appendChild(link);
+            } else {
+                td.textContent = row[colIndex] || '';
+            }
+
             tr.appendChild(td);
 
             if (timeColumns.includes(colIndex)) {
                 const tdSeconds = document.createElement('td');
-                tdSeconds.textContent = convertToSeconds(row[colIndex]);
+                tdSeconds.textContent = convertToSeconds(row[colIndex]); // Mostrar valor en segundos
                 tr.appendChild(tdSeconds);
             }
         });
@@ -121,22 +152,22 @@ function createTable(data) {
     table.appendChild(body);
 
     resultContainer.appendChild(table);
-    resultContainer.style.display = 'block';
+    resultContainer.style.display = 'block'; // Mostrar resultados
 }
 
-// Función para convertir "Xh Ym Zs" a segundos
+// Función para convertir un tiempo "Xh Ym Zs" a segundos
 function convertToSeconds(timeString) {
     if (!timeString) return 0;
 
-    const timeRegex = /(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/;
+    const timeRegex = /(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/; // Regex para horas, minutos y segundos
     const [, hours = 0, minutes = 0, seconds = 0] = timeString.match(timeRegex).map(Number);
 
-    return (hours * 3600) + (minutes * 60) + seconds;
+    return (hours * 3600) + (minutes * 60) + seconds; // Convertir todo a segundos
 }
 
 // Función para mostrar mensajes de error
 function showError(message) {
     const errorMessage = document.getElementById('errorMessage');
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
+    errorMessage.textContent = message; // Mostrar mensaje de error
+    errorMessage.style.display = 'block'; // Asegurarse de que sea visible
 }
