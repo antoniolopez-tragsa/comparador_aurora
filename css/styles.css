@@ -134,13 +134,17 @@
 }
 
 .results__table a {
-    color: var(--color-white); /* Color del enlace del footer */
-    text-decoration: underline; /* Subrayado para consistencia */
-    transition: color var(--transition-speed) ease; /* Transición suave para cambios de color */
+    color: var(--color-primary);
+    /* Naranja como el color principal */
+    text-decoration: underline;
+    /* Subrayado para mantener consistencia */
+    transition: color var(--transition-speed) ease;
+    /* Transición suave para el hover */
 }
 
 .results__table a:hover {
-    color: #ccc; /* Color en hover similar al footer */
+    color: var(--color-primary-dark);
+    /* Un tono más oscuro de naranja al hacer hover */
 }
 
 .results__table th,
@@ -204,14 +208,17 @@
 
 /* Estilos para los filtros */
 .filter__label {
-    display: block; /* Hace que los checkboxes se apilen verticalmente */
-    margin-bottom: var(--spacing-small); /* Espaciado entre checkboxes */
+    display: block;
+    /* Hace que los checkboxes se apilen verticalmente */
+    margin-bottom: var(--spacing-small);
+    /* Espaciado entre checkboxes */
     font-weight: bold;
     color: var(--color-text);
 }
 
 .filter-checkbox {
-    margin-right: var(--spacing-small); /* Espaciado entre checkbox y texto */
+    margin-right: var(--spacing-small);
+    /* Espaciado entre checkbox y texto */
 }
 
 /* Scroll horizontal y ajuste de tablas para pantallas pequeñas */
