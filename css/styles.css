@@ -1,0 +1,136 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Encabezado */
+header {
+    background-color: #ff4e00;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+/* Contenedor principal */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Centra el contenido verticalmente */
+    padding: 20px;
+}
+
+/* Formulario */
+form {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #555;
+}
+
+form input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+form button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #ff4e00;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #cc3e00;
+}
+
+/* Mensaje de error */
+#errorMessage {
+    display: none;
+    color: red;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* Contenedor de resultados */
+#resultContainer {
+    display: none;
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+#resultContainer h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #ff4e00;
+    border-bottom: 2px solid #ff4e00;
+    padding-bottom: 8px;
+}
+
+#resultContainer p {
+    font-size: 1em;
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #555;
+}
+
+#resultContainer p strong {
+    color: #ff4e00;
+}
+
+/* Pie de página pegado al fondo */
+footer {
+    background-color: #ff4e00;
+    color: #ffffff;
+    text-align: center;
+    padding: 15px 0;
+    width: 100%;
+}
+
+footer a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+footer a:hover {
+    color: #ccc;
+}

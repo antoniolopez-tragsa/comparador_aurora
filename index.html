@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador de listados de incidencias en AURORA</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <!-- Encabezado -->
+    <header>
+        <h1>Comparador de listados de incidencias en AURORA</h1>
+    </header>
+
+    <!-- Formulario -->
+    <main>
+        <form id="fileForm">
+            <label for="file1">Seleccione el primer archivo:</label>
+            <input type="file" id="file1" name="file1" accept=".xls" required>
+
+            <label for="file2">Seleccione el segundo archivo:</label>
+            <input type="file" id="file2" name="file2" accept=".xls">
+
+            <button type="submit" class="btn-submit" aria-label="Visualizar Archivos">Visualizar</button>
+
+            <!-- Mensaje de error -->
+            <div id="errorMessage" style="display:none; color:red;">Error: Por favor, cargue dos archivos .xls válidos.
+            </div>
+        </form>
+
+        <!-- Resultados de la comparación -->
+        <div id="resultContainer" style="display:none;">
+
+        </div>
+    </main>
+
+    <!-- Pie -->
+    <footer>
+        <p>Desarrollado por
+            <a href="mailto:antonio.angel.lopez.fernandez@gmail.com">Antonio Ángel López Fernández</a>
+        </p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+
+</html>
