@@ -206,6 +206,23 @@
     color: #ccc;
 }
 
+/* Icono GitHub */
+.github-link {
+    display: inline-block;
+    margin-top: var(--spacing-small);
+}
+
+.github-logo {
+    width: 32px; /* Tamaño ajustable */
+    height: 32px; /* Mantener proporciones */
+    transition: transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
+}
+
+.github-logo:hover {
+    transform: scale(1.1); /* Aumentar ligeramente el tamaño al pasar el ratón */
+    opacity: 0.8; /* Hacerlo un poco más transparente */
+}
+
 /* Estilos para los filtros */
 .filter__label {
     display: block;
