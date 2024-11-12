@@ -100,7 +100,6 @@ function checkFiles() {
 
 /**
  * Event listener para manejar la lógica de comparación entre los archivos seleccionados.
- * Compara las fechas de ambos archivos y muestra un alert si son iguales o diferentes.
  */
 document.getElementById('compareButton').addEventListener('click', function () {
     const file1 = document.getElementById('file1').files[0];
@@ -114,25 +113,51 @@ document.getElementById('compareButton').addEventListener('click', function () {
     const reader1 = new FileReader();
     const reader2 = new FileReader();
 
-    let date1 = null, date2 = null;
+    let data1Rows = [];
+    let data2Rows = [];
+    let date1Start = null, date1End = null, date1List = null;
+    let date2Start = null, date2End = null, date2List = null;
 
     reader1.onload = function (e) {
         const data1 = e.target.result;
         const workbook1 = XLSX.read(data1, { type: 'binary' });
         const sheet2_1 = workbook1.Sheets[workbook1.SheetNames[1]];
-        date1 = sheet2_1 && sheet2_1['B22'] ? parseDate(sheet2_1['B22'].v) : null;
+
+        // Leer fechas del primer archivo
+        date1Start = sheet2_1 && sheet2_1['B7'] ? sheet2_1['B7'].v : null;
+        date1End = sheet2_1 && sheet2_1['B8'] ? sheet2_1['B8'].v : null;
+        date1List = sheet2_1 && sheet2_1['B22'] ? sheet2_1['B22'].v : null;
+
+        const sheet1_1 = workbook1.Sheets[workbook1.SheetNames[0]];
+        data1Rows = XLSX.utils.sheet_to_json(sheet1_1, { header: 1, defval: '' }).slice(1); // Excluir cabecera
 
         reader2.onload = function (e) {
             const data2 = e.target.result;
             const workbook2 = XLSX.read(data2, { type: 'binary' });
             const sheet2_2 = workbook2.Sheets[workbook2.SheetNames[1]];
-            date2 = sheet2_2 && sheet2_2['B22'] ? parseDate(sheet2_2['B22'].v) : null;
 
-            if (date1 && date2 && date1.getTime() === date2.getTime()) {
-                alert('Ambos archivos tienen la misma fecha. No se realizará ninguna acción.');
-            } else {
-                alert('Las fechas son diferentes.');
+            // Leer fechas del segundo archivo
+            date2Start = sheet2_2 && sheet2_2['B7'] ? sheet2_2['B7'].v : null;
+            date2End = sheet2_2 && sheet2_2['B8'] ? sheet2_2['B8'].v : null;
+            date2List = sheet2_2 && sheet2_2['B22'] ? sheet2_2['B22'].v : null;
+
+            const sheet1_2 = workbook2.Sheets[workbook2.SheetNames[0]];
+            data2Rows = XLSX.utils.sheet_to_json(sheet1_2, { header: 1, defval: '' }).slice(1); // Excluir cabecera
+
+            // Verificar fechas del listado
+            if (date1List === date2List) {
+                alert('Ambos archivos tienen la misma fecha del listado. No se realizará ninguna acción.');
+                return;
             }
+
+            // Verificar fechas de inicio y fin
+            if (date1Start !== date2Start || date1End !== date2End) {
+                alert(`Las fechas de inicio o fin no coinciden:\n\nArchivo 1:\nInicio: ${date1Start} - Fin: ${date1End}\n\nArchivo 2:\nInicio: ${date2Start} - Fin: ${date2End}`);
+                return;
+            }
+
+            // Comparar criticidad y mostrar resultados
+            compareAndShowCriticidadChanges(data1Rows, data2Rows);
         };
 
         reader2.readAsArrayBuffer(file2);
@@ -140,6 +165,104 @@ document.getElementById('compareButton').addEventListener('click', function () {
 
     reader1.readAsArrayBuffer(file1);
 });
+
+/**
+ * Compara dos conjuntos de datos y muestra las filas con cambios en la criticidad.
+ * @param {Array} data1Rows - Filas del primer archivo.
+ * @param {Array} data2Rows - Filas del segundo archivo.
+ */
+function compareAndShowCriticidadChanges(data1Rows, data2Rows) {
+    const changes = [];
+
+    // Crear un mapa de filas basado en el código de petición (columna 12)
+    const mapData1 = new Map(data1Rows.map(row => [row[12], row]));
+    const mapData2 = new Map(data2Rows.map(row => [row[12], row]));
+
+    // Comparar criticidad de filas coincidentes por el código de petición
+    mapData1.forEach((row1, key) => {
+        const row2 = mapData2.get(key); // Buscar la fila correspondiente en el segundo archivo
+
+        if (row2 && row1[15] !== row2[15]) { // Criticidad ha cambiado (columna 15)
+            changes.push({
+                codigo: key,
+                criticidad1: row1[15], // Criticidad del primer archivo
+                criticidad2: row2[15], // Criticidad del segundo archivo
+                fila1: row1,
+                fila2: row2
+            });
+        }
+    });
+
+    if (changes.length > 0) {
+        alert(`Se encontraron ${changes.length} cambios en la criticidad.`);
+        showCriticidadChangesTable(changes); // Mostrar cambios en una tabla
+    } else {
+        alert('No se encontraron cambios en la criticidad.');
+    }
+}
+
+/**
+ * Limpia la tabla de resultados y oculta el contenedor.
+ */
+document.getElementById('clearButton').addEventListener('click', function () {
+    const resultContainer = document.getElementById('resultContainer');
+    resultContainer.innerHTML = ''; // Limpiar contenido
+    resultContainer.style.display = 'none'; // Ocultar contenedor
+
+    disableFieldset(); // Deshabilitar el fieldset al limpiar
+});
+
+/**
+ * Muestra la tabla y habilita el botón limpiar.
+ * @param {Array} changes - Cambios detectados.
+ */
+function showCriticidadChangesTable(changes) {
+    const resultContainer = document.getElementById('resultContainer');
+    const clearButton = document.getElementById('clearButton');
+
+    resultContainer.innerHTML = ''; // Limpiar resultados previos
+
+    const table = document.createElement('table');
+    table.classList.add('results__table');
+    table.setAttribute('role', 'table');
+
+    // Crear cabecera de la tabla
+    const header = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    ['Código', 'Criticidad Archivo 1', 'Criticidad Archivo 2'].forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        th.setAttribute('scope', 'col');
+        headerRow.appendChild(th);
+    });
+    header.appendChild(headerRow);
+    table.appendChild(header);
+
+    // Crear cuerpo de la tabla
+    const body = document.createElement('tbody');
+    changes.forEach(change => {
+        const tr = document.createElement('tr');
+
+        const tdCodigo = document.createElement('td');
+        tdCodigo.textContent = change.codigo;
+        tr.appendChild(tdCodigo);
+
+        const tdCrit1 = document.createElement('td');
+        tdCrit1.textContent = change.criticidad1;
+        tr.appendChild(tdCrit1);
+
+        const tdCrit2 = document.createElement('td');
+        tdCrit2.textContent = change.criticidad2;
+        tr.appendChild(tdCrit2);
+
+        body.appendChild(tr);
+    });
+
+    table.appendChild(body);
+    resultContainer.appendChild(table);
+    resultContainer.style.display = 'block'; // Mostrar tabla
+    clearButton.style.display = 'block'; // Mostrar botón limpiar
+}
 
 /**
  * Muestra un mensaje de error en el contenedor designado.
@@ -152,19 +275,24 @@ function showError(message) {
 }
 
 /**
- * Habilita los filtros y muestra la tabla con los datos procesados.
- * @param {Array} data - Datos de la hoja de cálculo.
+ * Muestra los datos y habilita el fieldset.
+ * @param {Array} data - Datos a mostrar.
  */
 function enableFiltersAndShowTable(data) {
-    document.getElementById('filterOptions').style.display = 'block'; // Mostrar filtros
-    document.getElementById('showClaims').checked = false; // Desmarcar filtros
+    enableFieldset(); // Habilitar fieldset
+    document.getElementById('filterOptions').style.display = 'block';
+    document.getElementById('showClaims').checked = false;
     document.getElementById('showAudits').checked = false;
 
     document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
     document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
 
-    filterTable(data); // Mostrar tabla sin filtrar inicialmente
+    // Mostrar el botón limpiar
+    document.getElementById('clearButton').style.display = 'block';
+
+    filterTable(data); // Mostrar tabla
 }
+
 
 // Función para filtrar la tabla
 function filterTable(data) {
@@ -283,3 +411,50 @@ function convertToSeconds(timeString) {
 
     return (hours * 3600) + (minutes * 60) + seconds;
 }
+
+/**
+ * Deshabilita el fieldset de filtros.
+ */
+function disableFieldset() {
+    document.getElementById('filterOptions').disabled = true;
+    document.getElementById('filterOptions').style.display = 'none'; // Ocultar el fieldset
+}
+
+/**
+ * Habilita el fieldset de filtros.
+ */
+function enableFieldset() {
+    document.getElementById('filterOptions').disabled = false;
+    document.getElementById('filterOptions').style.display = 'block'; // Mostrar el fieldset
+}
+
+/**
+ * Muestra los datos y habilita el fieldset.
+ * @param {Array} data - Datos a mostrar.
+ */
+function enableFiltersAndShowTable(data) {
+    enableFieldset(); // Habilitar fieldset
+    document.getElementById('filterOptions').style.display = 'block';
+    document.getElementById('showClaims').checked = false;
+    document.getElementById('showAudits').checked = false;
+
+    document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
+    document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
+
+    filterTable(data); // Mostrar tabla
+}
+
+/**
+ * Comparar archivos.
+ */
+document.getElementById('compareButton').addEventListener('click', function () {
+    const file1 = document.getElementById('file1').files[0];
+    const file2 = document.getElementById('file2').files[0];
+
+    if (!file1 || !file2) {
+        alert('Selecciona dos archivos para comparar.');
+        return;
+    }
+
+    disableFieldset(); // Deshabilitar fieldset al comparar
+});
