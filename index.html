@@ -32,8 +32,11 @@
                 <input type="file" id="file2" name="file2" class="form__input" accept=".xls">
             </fieldset>
 
+            <!-- Botonera -->
             <button type="submit" class="form__button" aria-label="Visualizar Archivos">Visualizar</button>
+            <button type="button" id="compareButton" class="form__button" style="display:none;" disabled>Comparar</button>
 
+            <!-- Mensajes de error -->
             <div id="errorMessage" class="form__error-message" aria-live="polite"></div>
 
             <!-- Fieldset para filtros -->
@@ -49,7 +52,6 @@
                     Mostrar solicitudes susceptibles de auditoría
                 </label>
             </fieldset>
-
         </form>
 
         <!-- Contenedor de resultados -->

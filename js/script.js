@@ -1,4 +1,20 @@
-// Añadir un event listener al formulario para manejar la carga de archivos
+/**
+ * Convierte una cadena de fecha en formato "DD/MM/YYYY HH:MM:SS" a un objeto Date.
+ * @param {string} dateString - La cadena de fecha en formato "DD/MM/YYYY HH:MM:SS".
+ * @returns {Date|null} - Un objeto Date correspondiente a la cadena o null si el formato es inválido.
+ */
+function parseDate(dateString) {
+    if (!dateString) return null; // Retornar null si no hay cadena
+    const [datePart, timePart] = dateString.split(' '); // Dividir en fecha y hora
+    const [day, month, year] = datePart.split('/').map(Number); // Obtener día, mes, año
+    const [hours, minutes, seconds] = timePart.split(':').map(Number); // Obtener horas, minutos, segundos
+    return new Date(year, month - 1, day, hours, minutes, seconds); // Crear objeto Date
+}
+
+/**
+ * Event listener para manejar el envío del formulario.
+ * Lee los archivos seleccionados, procesa sus hojas y muestra los datos.
+ */
 document.getElementById('fileForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Evitar recarga de página
 
@@ -15,25 +31,14 @@ document.getElementById('fileForm').addEventListener('submit', function (event) 
     const reader1 = new FileReader();
     const reader2 = file2 ? new FileReader() : null; // Leer el segundo archivo si está presente
 
-    let date1 = null, date2 = null; // Variables para almacenar fechas
-
-    // Función para convertir una cadena de fecha en formato "DD/MM/YYYY HH:MM:SS" a un objeto Date
-    function parseDate(dateString) {
-        if (!dateString) return null;
-        const [datePart, timePart] = dateString.split(' '); // Dividir en fecha y hora
-        const [day, month, year] = datePart.split('/').map(Number); // Obtener día, mes, año
-        const [hours, minutes, seconds] = timePart.split(':').map(Number); // Obtener horas, minutos, segundos
-        return new Date(year, month - 1, day, hours, minutes, seconds); // Crear objeto Date
-    }
+    let date1 = null, date2 = null;
 
     // Procesar el primer archivo
     reader1.onload = function (e) {
         const data1 = e.target.result;
         const workbook1 = XLSX.read(data1, { type: 'binary' });
         const sheet2_1 = workbook1.Sheets[workbook1.SheetNames[1]]; // Segunda hoja del primer archivo
-
-        // Obtener la fecha de la celda B22 y convertirla a un objeto Date
-        date1 = sheet2_1 && sheet2_1['B22'] ? parseDate(sheet2_1['B22'].v) : null;
+        date1 = sheet2_1 && sheet2_1['B22'] ? parseDate(sheet2_1['B22'].v) : null; // Leer fecha
 
         const rows1 = XLSX.utils.sheet_to_json(workbook1.Sheets[workbook1.SheetNames[0]], { header: 1, defval: '' });
 
@@ -48,9 +53,7 @@ document.getElementById('fileForm').addEventListener('submit', function (event) 
                 const data2 = e.target.result;
                 const workbook2 = XLSX.read(data2, { type: 'binary' });
                 const sheet2_2 = workbook2.Sheets[workbook2.SheetNames[1]]; // Segunda hoja del segundo archivo
-
-                // Obtener la fecha de la celda B22 y convertirla a un objeto Date
-                date2 = sheet2_2 && sheet2_2['B22'] ? parseDate(sheet2_2['B22'].v) : null;
+                date2 = sheet2_2 && sheet2_2['B22'] ? parseDate(sheet2_2['B22'].v) : null; // Leer fecha
 
                 const rows2 = XLSX.utils.sheet_to_json(workbook2.Sheets[workbook2.SheetNames[0]], { header: 1, defval: '' });
 
@@ -59,17 +62,8 @@ document.getElementById('fileForm').addEventListener('submit', function (event) 
                     return;
                 }
 
-                // Comparar fechas
-                if (date1 && date2 && date1.getTime() === date2.getTime()) {
-                    alert('Ambos archivos tienen la misma fecha. Se procesará el primer archivo.');
-                    enableFiltersAndShowTable(rows1); // Fechas iguales: tratar como el mismo archivo
-                } else if (date1 > date2 || !date2) {
-                    alert('El primer archivo es más reciente y se procesará.');
-                    enableFiltersAndShowTable(rows1); // Fecha 1 más reciente o fecha 2 no disponible
-                } else {
-                    alert('El segundo archivo es más reciente y se procesará.');
-                    enableFiltersAndShowTable(rows2); // Fecha 2 más reciente
-                }
+                // Mostrar datos del archivo más reciente
+                enableFiltersAndShowTable(date1 > date2 || !date2 ? rows1 : rows2);
             };
 
             reader2.readAsArrayBuffer(file2);
@@ -81,14 +75,86 @@ document.getElementById('fileForm').addEventListener('submit', function (event) 
     reader1.readAsArrayBuffer(file1);
 });
 
-// Función para mostrar errores
+/**
+ * Event listeners para habilitar/deshabilitar el botón Comparar cuando ambos archivos están seleccionados.
+ */
+document.getElementById('file1').addEventListener('change', checkFiles);
+document.getElementById('file2').addEventListener('change', checkFiles);
+
+/**
+ * Habilita o deshabilita el botón Comparar dependiendo de si ambos archivos están seleccionados.
+ */
+function checkFiles() {
+    const file1 = document.getElementById('file1').files[0];
+    const file2 = document.getElementById('file2').files[0];
+    const compareButton = document.getElementById('compareButton');
+
+    if (file1 && file2) {
+        compareButton.style.display = 'block'; // Mostrar el botón
+        compareButton.disabled = false; // Habilitar el botón
+    } else {
+        compareButton.style.display = 'none'; // Ocultar el botón
+        compareButton.disabled = true; // Deshabilitar el botón
+    }
+}
+
+/**
+ * Event listener para manejar la lógica de comparación entre los archivos seleccionados.
+ * Compara las fechas de ambos archivos y muestra un alert si son iguales o diferentes.
+ */
+document.getElementById('compareButton').addEventListener('click', function () {
+    const file1 = document.getElementById('file1').files[0];
+    const file2 = document.getElementById('file2').files[0];
+
+    if (!file1 || !file2) {
+        alert('Selecciona dos archivos para comparar.');
+        return;
+    }
+
+    const reader1 = new FileReader();
+    const reader2 = new FileReader();
+
+    let date1 = null, date2 = null;
+
+    reader1.onload = function (e) {
+        const data1 = e.target.result;
+        const workbook1 = XLSX.read(data1, { type: 'binary' });
+        const sheet2_1 = workbook1.Sheets[workbook1.SheetNames[1]];
+        date1 = sheet2_1 && sheet2_1['B22'] ? parseDate(sheet2_1['B22'].v) : null;
+
+        reader2.onload = function (e) {
+            const data2 = e.target.result;
+            const workbook2 = XLSX.read(data2, { type: 'binary' });
+            const sheet2_2 = workbook2.Sheets[workbook2.SheetNames[1]];
+            date2 = sheet2_2 && sheet2_2['B22'] ? parseDate(sheet2_2['B22'].v) : null;
+
+            if (date1 && date2 && date1.getTime() === date2.getTime()) {
+                alert('Ambos archivos tienen la misma fecha. No se realizará ninguna acción.');
+            } else {
+                alert('Las fechas son diferentes.');
+            }
+        };
+
+        reader2.readAsArrayBuffer(file2);
+    };
+
+    reader1.readAsArrayBuffer(file1);
+});
+
+/**
+ * Muestra un mensaje de error en el contenedor designado.
+ * @param {string} message - Mensaje de error a mostrar.
+ */
 function showError(message) {
     const errorMessage = document.getElementById('errorMessage');
     errorMessage.textContent = message; // Mostrar mensaje de error
     errorMessage.style.display = 'block'; // Asegurar visibilidad del mensaje
 }
 
-// Función para habilitar filtros y mostrar la tabla
+/**
+ * Habilita los filtros y muestra la tabla con los datos procesados.
+ * @param {Array} data - Datos de la hoja de cálculo.
+ */
 function enableFiltersAndShowTable(data) {
     document.getElementById('filterOptions').style.display = 'block'; // Mostrar filtros
     document.getElementById('showClaims').checked = false; // Desmarcar filtros
@@ -100,7 +166,7 @@ function enableFiltersAndShowTable(data) {
     filterTable(data); // Mostrar tabla sin filtrar inicialmente
 }
 
-// Función para filtrar la tabla según las opciones seleccionadas
+// Función para filtrar la tabla
 function filterTable(data) {
     const showClaims = document.getElementById('showClaims').checked;
     const showAudits = document.getElementById('showAudits').checked;
@@ -108,43 +174,43 @@ function filterTable(data) {
 
     if (showClaims || showAudits) {
         filteredData = filteredData.filter(row => {
-            const isClaim = row[11] && row[11].includes('R'); // Reclamación
-            const tRespSeconds = convertToSeconds(row[0]); // Tiempo de Respuesta
-            const tResolSeconds = convertToSeconds(row[1]); // Tiempo de Resolución
-            const maxTRespSeconds = convertToSeconds(row[4]); // Máximo T. Resp
-            const maxTResolSeconds = convertToSeconds(row[5]); // Máximo T. Resol
+            const isClaim = row[11] && row[11].includes('R');
+            const tRespSeconds = convertToSeconds(row[0]);
+            const tResolSeconds = convertToSeconds(row[1]);
+            const maxTRespSeconds = convertToSeconds(row[4]);
+            const maxTResolSeconds = convertToSeconds(row[5]);
 
-            if (showClaims && isClaim) return true; // Mostrar reclamaciones
+            if (showClaims && isClaim) return true;
 
             if (showAudits) {
-                if (maxTRespSeconds === 0 || maxTResolSeconds === 0) return false; // Excluir si máximos son 0
-                const exceedsMaxResp = tRespSeconds > maxTRespSeconds;
-                const exceedsMaxResol = tResolSeconds >= maxTResolSeconds;
-                return exceedsMaxResp || exceedsMaxResol; // Cumple criterio de auditoría
+                if (maxTRespSeconds === 0 || maxTResolSeconds === 0) return false;
+                return tRespSeconds > maxTRespSeconds || tResolSeconds >= maxTResolSeconds;
             }
 
             return false;
         });
     }
 
-    createTable([data[0], ...filteredData]); // Reconstruir la tabla
+    createTable([data[0], ...filteredData]);
 }
 
-// Función para crear la tabla con los datos proporcionados
+/**
+ * Crea y muestra una tabla con los datos proporcionados.
+ * @param {Array} data - Datos de la hoja de cálculo.
+ */
 function createTable(data) {
     const resultContainer = document.getElementById('resultContainer');
     resultContainer.innerHTML = ''; // Limpiar resultados previos
 
     const table = document.createElement('table');
     table.classList.add('results__table');
-    table.setAttribute('role', 'table'); // Accesibilidad
+    table.setAttribute('role', 'table');
 
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    // Añadir la columna 14 (Criticidad) a las columnas que se mostrarán
-    const columnsToShow = [12, 0, 1, 4, 5, 11, 14]; // Añadida la columna 14
-    const timeColumns = [0, 1, 4, 5]; // Columnas que contienen tiempos
+    const columnsToShow = [12, 0, 1, 4, 5, 11, 14];
+    const timeColumns = [0, 1, 4, 5];
 
     columnsToShow.forEach((colIndex) => {
         const th = document.createElement('th');
@@ -201,17 +267,19 @@ function createTable(data) {
     resultContainer.style.display = 'block';
 }
 
-
-// Función para convertir un tiempo "Xh Ym Zs" a segundos
+/**
+ * Convierte un tiempo en formato "Xh Ym Zs" a segundos.
+ * @param {string} timeString - Cadena de tiempo en formato "Xh Ym Zs".
+ * @returns {number} - Tiempo total en segundos.
+ */
 function convertToSeconds(timeString) {
-    if (!timeString) return 0; // Retorna 0 si la cadena está vacía o es null/undefined
-
-    const timeRegex = /(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/; // Regex para horas, minutos y segundos
+    if (!timeString) return 0;
+    const timeRegex = /(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/;
     const match = timeString.match(timeRegex);
 
-    if (!match) return 0; // Retorna 0 si el formato no coincide con el esperado
+    if (!match) return 0;
 
-    const [, hours = 0, minutes = 0, seconds = 0] = match.map(val => (val ? Number(val) : 0)); // Asegurar valores numéricos
+    const [, hours = 0, minutes = 0, seconds = 0] = match.map(val => (val ? Number(val) : 0));
 
-    return (hours * 3600) + (minutes * 60) + seconds; // Convertir a segundos
+    return (hours * 3600) + (minutes * 60) + seconds;
 }
