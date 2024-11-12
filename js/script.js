@@ -230,9 +230,6 @@ document.getElementById('clearButton').addEventListener('click', function () {
     const compareButton = document.getElementById('compareButton');
     compareButton.style.display = 'none';
     compareButton.disabled = true;
-
-    // Ocultar botón limpiar
-    this.style.display = 'none';
 });
 
 /**
