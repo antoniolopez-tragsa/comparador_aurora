@@ -156,8 +156,8 @@ document.getElementById('compareButton').addEventListener('click', function () {
                 return;
             }
 
-            // Comparar criticidad y mostrar resultados
-            compareAndShowCriticidadChanges(data1Rows, data2Rows);
+            // Llama a la función de comparación con las fechas incluidas
+            compareAndShowCriticidadChanges(data1Rows, data2Rows, date1List, date2List);
         };
 
         reader2.readAsArrayBuffer(file2);
@@ -170,32 +170,30 @@ document.getElementById('compareButton').addEventListener('click', function () {
  * Compara dos conjuntos de datos y muestra las filas con cambios en la criticidad.
  * @param {Array} data1Rows - Filas del primer archivo.
  * @param {Array} data2Rows - Filas del segundo archivo.
+ * @param {string} date1List - Fecha del listado del primer archivo.
+ * @param {string} date2List - Fecha del listado del segundo archivo.
  */
-function compareAndShowCriticidadChanges(data1Rows, data2Rows) {
+function compareAndShowCriticidadChanges(data1Rows, data2Rows, date1List, date2List) {
     const changes = [];
 
-    // Crear un mapa de filas basado en el código de petición (columna 12)
     const mapData1 = new Map(data1Rows.map(row => [row[12], row]));
     const mapData2 = new Map(data2Rows.map(row => [row[12], row]));
 
-    // Comparar criticidad de filas coincidentes por el código de petición
     mapData1.forEach((row1, key) => {
-        const row2 = mapData2.get(key); // Buscar la fila correspondiente en el segundo archivo
+        const row2 = mapData2.get(key);
 
-        if (row2 && row1[15] !== row2[15]) { // Criticidad ha cambiado (columna 15)
+        if (row2 && row1[15] !== row2[15]) {
             changes.push({
                 codigo: key,
-                criticidad1: row1[15], // Criticidad del primer archivo
-                criticidad2: row2[15], // Criticidad del segundo archivo
-                fila1: row1,
-                fila2: row2
+                criticidad1: row1[15],
+                criticidad2: row2[15]
             });
         }
     });
 
     if (changes.length > 0) {
         alert(`Se encontraron ${changes.length} cambios en la criticidad.`);
-        showCriticidadChangesTable(changes); // Mostrar cambios en una tabla
+        showCriticidadChangesTable(changes, date1List, date2List); // Pasa las fechas
     } else {
         alert('No se encontraron cambios en la criticidad.');
     }
@@ -213,10 +211,12 @@ document.getElementById('clearButton').addEventListener('click', function () {
 });
 
 /**
- * Muestra la tabla y habilita el botón limpiar.
+ * Muestra los cambios en la criticidad en una tabla.
  * @param {Array} changes - Cambios detectados.
+ * @param {string} date1List - Fecha de listado del primer archivo.
+ * @param {string} date2List - Fecha de listado del segundo archivo.
  */
-function showCriticidadChangesTable(changes) {
+function showCriticidadChangesTable(changes, date1List, date2List) {
     const resultContainer = document.getElementById('resultContainer');
     const clearButton = document.getElementById('clearButton');
 
@@ -226,10 +226,14 @@ function showCriticidadChangesTable(changes) {
     table.classList.add('results__table');
     table.setAttribute('role', 'table');
 
-    // Crear cabecera de la tabla
+    // Crear cabecera de la tabla con fechas personalizadas
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    ['Código', 'Criticidad Archivo 1', 'Criticidad Archivo 2'].forEach(text => {
+    [
+        'Código',
+        `Criticidad Archivo 1 (${date1List || 'Sin Fecha'})`,
+        `Criticidad Archivo 2 (${date2List || 'Sin Fecha'})`
+    ].forEach(text => {
         const th = document.createElement('th');
         th.textContent = text;
         th.setAttribute('scope', 'col');
@@ -243,14 +247,21 @@ function showCriticidadChangesTable(changes) {
     changes.forEach(change => {
         const tr = document.createElement('tr');
 
+        // Celda con enlace para el Código
         const tdCodigo = document.createElement('td');
-        tdCodigo.textContent = change.codigo;
+        const link = document.createElement('a');
+        link.href = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${change.codigo}`;
+        link.textContent = change.codigo;
+        link.target = '_blank';
+        tdCodigo.appendChild(link);
         tr.appendChild(tdCodigo);
 
+        // Celda para Criticidad Archivo 1
         const tdCrit1 = document.createElement('td');
         tdCrit1.textContent = change.criticidad1;
         tr.appendChild(tdCrit1);
 
+        // Celda para Criticidad Archivo 2
         const tdCrit2 = document.createElement('td');
         tdCrit2.textContent = change.criticidad2;
         tr.appendChild(tdCrit2);
