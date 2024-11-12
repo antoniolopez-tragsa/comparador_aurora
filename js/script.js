@@ -142,8 +142,9 @@ function createTable(data) {
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    const columnsToShow = [12, 0, 1, 4, 5, 11];
-    const timeColumns = [0, 1, 4, 5];
+    // Añadir la columna 14 (Criticidad) a las columnas que se mostrarán
+    const columnsToShow = [12, 0, 1, 4, 5, 11, 14]; // Añadida la columna 14
+    const timeColumns = [0, 1, 4, 5]; // Columnas que contienen tiempos
 
     columnsToShow.forEach((colIndex) => {
         const th = document.createElement('th');
@@ -199,6 +200,7 @@ function createTable(data) {
     resultContainer.appendChild(table);
     resultContainer.style.display = 'block';
 }
+
 
 // Función para convertir un tiempo "Xh Ym Zs" a segundos
 function convertToSeconds(timeString) {
