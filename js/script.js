@@ -1,92 +1,133 @@
-// Añadir un event listener al formulario para manejar la carga del archivo
+// Añadir un event listener al formulario para manejar la carga de archivos
 document.getElementById('fileForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Evitar recarga de página
 
-    const fileInput = document.getElementById('file1');
-    const file = fileInput.files[0];
+    const fileInput1 = document.getElementById('file1');
+    const fileInput2 = document.getElementById('file2');
+    const file1 = fileInput1.files[0]; // Primer archivo seleccionado
+    const file2 = fileInput2.files[0]; // Segundo archivo seleccionado
 
-    if (!file) {
-        showError('Por favor, selecciona un archivo.'); // Mostrar error si no se selecciona un archivo
+    if (!file1) {
+        showError('Por favor, selecciona al menos el primer archivo.'); // Mostrar error si no hay primer archivo
         return;
     }
 
-    const reader = new FileReader();
+    const reader1 = new FileReader();
+    const reader2 = file2 ? new FileReader() : null; // Leer el segundo archivo si está presente
 
-    reader.onload = function (e) {
-        try {
-            const data = e.target.result;
-            const workbook = XLSX.read(data, { type: 'binary' }); // Leer el archivo Excel en formato binario
-            const sheet = workbook.Sheets[workbook.SheetNames[0]]; // Obtener la primera hoja del archivo
+    let date1 = null, date2 = null; // Variables para almacenar fechas
 
-            // Convertir la hoja en un array de objetos
-            const rows = XLSX.utils.sheet_to_json(sheet, {
-                header: 1, // Utilizar la primera fila como cabecera
-                defval: '' // Reemplazar valores `undefined` con cadena vacía
-            });
+    // Función para convertir una cadena de fecha en formato "DD/MM/YYYY HH:MM:SS" a un objeto Date
+    function parseDate(dateString) {
+        if (!dateString) return null;
+        const [datePart, timePart] = dateString.split(' '); // Dividir en fecha y hora
+        const [day, month, year] = datePart.split('/').map(Number); // Obtener día, mes, año
+        const [hours, minutes, seconds] = timePart.split(':').map(Number); // Obtener horas, minutos, segundos
+        return new Date(year, month - 1, day, hours, minutes, seconds); // Crear objeto Date
+    }
 
-            if (rows.length === 0) {
-                showError('El archivo está vacío o no contiene datos legibles.');
-                return;
-            }
+    // Procesar el primer archivo
+    reader1.onload = function (e) {
+        const data1 = e.target.result;
+        const workbook1 = XLSX.read(data1, { type: 'binary' });
+        const sheet2_1 = workbook1.Sheets[workbook1.SheetNames[1]]; // Segunda hoja del primer archivo
 
-            createTable(rows); // Crear la tabla con los datos extraídos
+        // Obtener la fecha de la celda B22 y convertirla a un objeto Date
+        date1 = sheet2_1 && sheet2_1['B22'] ? parseDate(sheet2_1['B22'].v) : null;
 
-            // Desmarcar los checkbox por defecto
-            document.getElementById('showClaims').checked = false;
-            document.getElementById('showAudits').checked = false;
+        const rows1 = XLSX.utils.sheet_to_json(workbook1.Sheets[workbook1.SheetNames[0]], { header: 1, defval: '' });
 
+        if (rows1.length === 0) {
+            showError('El primer archivo está vacío o no contiene datos legibles.');
+            return;
+        }
 
-            // Mostrar el fieldset con los filtros después de cargar la tabla
-            document.getElementById('filterOptions').style.display = 'block';
+        if (reader2) {
+            // Procesar el segundo archivo si está presente
+            reader2.onload = function (e) {
+                const data2 = e.target.result;
+                const workbook2 = XLSX.read(data2, { type: 'binary' });
+                const sheet2_2 = workbook2.Sheets[workbook2.SheetNames[1]]; // Segunda hoja del segundo archivo
 
-            // Añadir eventos a los checkbox para filtrar la tabla en tiempo real
-            document.getElementById('showClaims').addEventListener('change', () => filterTable(rows));
-            document.getElementById('showAudits').addEventListener('change', () => filterTable(rows));
+                // Obtener la fecha de la celda B22 y convertirla a un objeto Date
+                date2 = sheet2_2 && sheet2_2['B22'] ? parseDate(sheet2_2['B22'].v) : null;
 
-        } catch (error) {
-            showError('Ocurrió un error al procesar el archivo.');
-            console.error(error);
+                const rows2 = XLSX.utils.sheet_to_json(workbook2.Sheets[workbook2.SheetNames[0]], { header: 1, defval: '' });
+
+                if (rows2.length === 0) {
+                    showError('El segundo archivo está vacío o no contiene datos legibles.');
+                    return;
+                }
+
+                // Comparar fechas
+                if (date1 && date2 && date1.getTime() === date2.getTime()) {
+                    alert('Ambos archivos tienen la misma fecha. Se procesará el primer archivo.');
+                    enableFiltersAndShowTable(rows1); // Fechas iguales: tratar como el mismo archivo
+                } else if (date1 > date2 || !date2) {
+                    alert('El primer archivo es más reciente y se procesará.');
+                    enableFiltersAndShowTable(rows1); // Fecha 1 más reciente o fecha 2 no disponible
+                } else {
+                    alert('El segundo archivo es más reciente y se procesará.');
+                    enableFiltersAndShowTable(rows2); // Fecha 2 más reciente
+                }
+            };
+
+            reader2.readAsArrayBuffer(file2);
+        } else {
+            enableFiltersAndShowTable(rows1); // Solo un archivo seleccionado
         }
     };
 
-    reader.readAsArrayBuffer(file); // Leer el archivo como un array de bytes
+    reader1.readAsArrayBuffer(file1);
 });
 
-// Función para filtrar la tabla basada en las opciones seleccionadas
+// Función para mostrar errores
+function showError(message) {
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message; // Mostrar mensaje de error
+    errorMessage.style.display = 'block'; // Asegurar visibilidad del mensaje
+}
+
+// Función para habilitar filtros y mostrar la tabla
+function enableFiltersAndShowTable(data) {
+    document.getElementById('filterOptions').style.display = 'block'; // Mostrar filtros
+    document.getElementById('showClaims').checked = false; // Desmarcar filtros
+    document.getElementById('showAudits').checked = false;
+
+    document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
+    document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
+
+    filterTable(data); // Mostrar tabla sin filtrar inicialmente
+}
+
+// Función para filtrar la tabla según las opciones seleccionadas
 function filterTable(data) {
     const showClaims = document.getElementById('showClaims').checked;
     const showAudits = document.getElementById('showAudits').checked;
-
-    let filteredData = data.slice(1); // Excluir la cabecera
+    let filteredData = data.slice(1); // Excluir cabecera
 
     if (showClaims || showAudits) {
         filteredData = filteredData.filter(row => {
-            const isClaim = row[11] && row[11].includes('R'); // Verificar si es una reclamación (columna 11 contiene "R")
-            const tRespSeconds = convertToSeconds(row[0]); // T. Resp en segundos (columna 0)
-            const tResolSeconds = convertToSeconds(row[1]); // T. Resol en segundos (columna 1)
-            const maxTRespSeconds = convertToSeconds(row[4]); // Máximo T. Resp en segundos (columna 4)
-            const maxTResolSeconds = convertToSeconds(row[5]); // Máximo T. Resol en segundos (columna 5)
+            const isClaim = row[11] && row[11].includes('R'); // Reclamación
+            const tRespSeconds = convertToSeconds(row[0]); // Tiempo de Respuesta
+            const tResolSeconds = convertToSeconds(row[1]); // Tiempo de Resolución
+            const maxTRespSeconds = convertToSeconds(row[4]); // Máximo T. Resp
+            const maxTResolSeconds = convertToSeconds(row[5]); // Máximo T. Resol
 
-            // Mostrar siempre las reclamaciones si el primer checkbox está activo
-            if (showClaims && isClaim) return true;
+            if (showClaims && isClaim) return true; // Mostrar reclamaciones
 
-            // Aplicar criterios de auditoría solo si el segundo checkbox está activo
             if (showAudits) {
-                // Excluir filas si los máximos son 0
-                if (maxTRespSeconds === 0 || maxTResolSeconds === 0) return false;
-
-                // Verificar si los tiempos exceden los máximos permitidos
+                if (maxTRespSeconds === 0 || maxTResolSeconds === 0) return false; // Excluir si máximos son 0
                 const exceedsMaxResp = tRespSeconds > maxTRespSeconds;
                 const exceedsMaxResol = tResolSeconds >= maxTResolSeconds;
-
-                return exceedsMaxResp || exceedsMaxResol; // Cumple el criterio de auditoría
+                return exceedsMaxResp || exceedsMaxResol; // Cumple criterio de auditoría
             }
 
-            return false; // Excluir si no cumple ningún criterio
+            return false;
         });
     }
 
-    createTable([data[0], ...filteredData]); // Reconstruir la tabla con los datos filtrados, manteniendo la cabecera
+    createTable([data[0], ...filteredData]); // Reconstruir la tabla
 }
 
 // Función para crear la tabla con los datos proporcionados
@@ -101,17 +142,16 @@ function createTable(data) {
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    const columnsToShow = [12, 0, 1, 4, 5, 11]; // Índices de columnas a mostrar
-    const timeColumns = [0, 1, 4, 5]; // Columnas que contienen tiempos
+    const columnsToShow = [12, 0, 1, 4, 5, 11];
+    const timeColumns = [0, 1, 4, 5];
 
     columnsToShow.forEach((colIndex) => {
         const th = document.createElement('th');
-        th.textContent = data[0][colIndex] || `Columna ${colIndex + 1}`; // Nombre de columna o índice
-        th.setAttribute('scope', 'col'); // Accesibilidad
+        th.textContent = data[0][colIndex] || `Columna ${colIndex + 1}`;
+        th.setAttribute('scope', 'col');
         headerRow.appendChild(th);
 
         if (timeColumns.includes(colIndex)) {
-            // Añadir columnas adicionales para mostrar valores en segundos
             const thSeconds = document.createElement('th');
             thSeconds.textContent = `${data[0][colIndex]} (Segundos)`;
             thSeconds.setAttribute('scope', 'col');
@@ -131,11 +171,11 @@ function createTable(data) {
         columnsToShow.forEach((colIndex) => {
             const td = document.createElement('td');
 
-            if (colIndex === 12) { // Código de petición (columna 12)
+            if (colIndex === 12) {
                 const link = document.createElement('a');
                 link.href = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${row[colIndex]}`;
                 link.textContent = row[colIndex];
-                link.target = '_blank'; // Abrir en nueva pestaña
+                link.target = '_blank';
                 td.appendChild(link);
             } else {
                 td.textContent = row[colIndex] || '';
@@ -145,7 +185,7 @@ function createTable(data) {
 
             if (timeColumns.includes(colIndex)) {
                 const tdSeconds = document.createElement('td');
-                tdSeconds.textContent = convertToSeconds(row[colIndex]); // Mostrar valor en segundos
+                tdSeconds.textContent = convertToSeconds(row[colIndex]);
                 tr.appendChild(tdSeconds);
             }
         });
@@ -157,22 +197,19 @@ function createTable(data) {
     table.appendChild(body);
 
     resultContainer.appendChild(table);
-    resultContainer.style.display = 'block'; // Mostrar resultados
+    resultContainer.style.display = 'block';
 }
 
 // Función para convertir un tiempo "Xh Ym Zs" a segundos
 function convertToSeconds(timeString) {
-    if (!timeString) return 0;
+    if (!timeString) return 0; // Retorna 0 si la cadena está vacía o es null/undefined
 
     const timeRegex = /(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/; // Regex para horas, minutos y segundos
-    const [, hours = 0, minutes = 0, seconds = 0] = timeString.match(timeRegex).map(Number);
+    const match = timeString.match(timeRegex);
 
-    return (hours * 3600) + (minutes * 60) + seconds; // Convertir todo a segundos
-}
+    if (!match) return 0; // Retorna 0 si el formato no coincide con el esperado
 
-// Función para mostrar mensajes de error
-function showError(message) {
-    const errorMessage = document.getElementById('errorMessage');
-    errorMessage.textContent = message; // Mostrar mensaje de error
-    errorMessage.style.display = 'block'; // Asegurarse de que sea visible
+    const [, hours = 0, minutes = 0, seconds = 0] = match.map(val => (val ? Number(val) : 0)); // Asegurar valores numéricos
+
+    return (hours * 3600) + (minutes * 60) + seconds; // Convertir a segundos
 }
