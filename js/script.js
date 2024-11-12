@@ -75,9 +75,7 @@ document.getElementById('fileForm').addEventListener('submit', function (event) 
     reader1.readAsArrayBuffer(file1);
 });
 
-/**
- * Event listeners para habilitar/deshabilitar el botón Comparar cuando ambos archivos están seleccionados.
- */
+// Vincular la función `checkFiles` a los eventos de cambio en los campos de archivo
 document.getElementById('file1').addEventListener('change', checkFiles);
 document.getElementById('file2').addEventListener('change', checkFiles);
 
@@ -200,14 +198,41 @@ function compareAndShowCriticidadChanges(data1Rows, data2Rows, date1List, date2L
 }
 
 /**
- * Limpia la tabla de resultados y oculta el contenedor.
+ * Oculta el contenedor de resultados de manera inmediata.
+ */
+function hideResultContainer() {
+    const resultContainer = document.getElementById('resultContainer');
+    resultContainer.style.display = 'none'; // Ocultar inmediatamente
+}
+
+/**
+ * Oculta el fieldset de filtros de manera inmediata.
+ */
+function hideFilterOptions() {
+    const filterOptions = document.getElementById('filterOptions');
+    filterOptions.style.display = 'none'; // Ocultar inmediatamente
+}
+
+/**
+ * Limpia la tabla de resultados, oculta filtros, resetea los archivos seleccionados
+ * y oculta el botón de comparar.
  */
 document.getElementById('clearButton').addEventListener('click', function () {
-    const resultContainer = document.getElementById('resultContainer');
-    resultContainer.innerHTML = ''; // Limpiar contenido
-    resultContainer.style.display = 'none'; // Ocultar contenedor
+    // Ocultar contenedor de resultados y filtros
+    hideResultContainer();
+    hideFilterOptions();
 
-    disableFieldset(); // Deshabilitar el fieldset al limpiar
+    // Limpiar campos de archivos
+    document.getElementById('file1').value = '';
+    document.getElementById('file2').value = '';
+
+    // Ocultar y deshabilitar el botón Comparar
+    const compareButton = document.getElementById('compareButton');
+    compareButton.style.display = 'none';
+    compareButton.disabled = true;
+
+    // Ocultar botón limpiar
+    this.style.display = 'none';
 });
 
 /**
