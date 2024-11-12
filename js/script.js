@@ -255,7 +255,7 @@ function showCriticidadChangesTable(changes, date1List, date2List) {
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
     [
-        'Código',
+        'Código petición',
         `Criticidad Archivo 1 (${date1List || 'Sin Fecha'})`,
         `Criticidad Archivo 2 (${date2List || 'Sin Fecha'})`
     ].forEach(text => {
