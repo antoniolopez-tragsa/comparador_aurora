@@ -107,6 +107,10 @@
     display: block;
 }
 
+#showPending {
+    margin-right: var(--spacing-small);
+}
+
 /* Resultados */
 .results {
     display: none;

@@ -331,11 +331,18 @@ function enableFiltersAndShowTable(data) {
 function filterTable(data) {
     const showClaims = document.getElementById('showClaims').checked;
     const showAudits = document.getElementById('showAudits').checked;
+    const showPending = document.getElementById('showPending').checked;
+
     let filteredData = data.slice(1); // Excluir cabecera
 
-    if (showClaims || showAudits) {
+    if (showClaims || showAudits || showPending) {
         filteredData = filteredData.filter(row => {
             const isClaim = row[11] && row[11].includes('R');
+            const isPending = row[13] && row[13] === 'En espera'; // Columna N (indice 13)
+            const timeCol49Seconds = convertToSeconds(row[48]); // Columna 49 (índice 48)
+
+            const isPendingWithTime = isPending && timeCol49Seconds > 0; // Validación "En espera" con tiempo mayor a 0
+
             const tRespSeconds = convertToSeconds(row[0]);
             const tResolSeconds = convertToSeconds(row[1]);
             const maxTRespSeconds = convertToSeconds(row[4]);
@@ -348,12 +355,15 @@ function filterTable(data) {
                 return tRespSeconds > maxTRespSeconds || tResolSeconds >= maxTResolSeconds;
             }
 
+            if (showPending && isPendingWithTime) return true;
+
             return false;
         });
     }
 
     createTable([data[0], ...filteredData]);
 }
+
 
 /**
  * Crea y muestra una tabla con los datos proporcionados.
@@ -470,9 +480,11 @@ function enableFiltersAndShowTable(data) {
     document.getElementById('filterOptions').style.display = 'block';
     document.getElementById('showClaims').checked = false;
     document.getElementById('showAudits').checked = false;
+    document.getElementById('showPending').checked = false; // Nuevo filtro
 
     document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
     document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
+    document.getElementById('showPending').addEventListener('change', () => filterTable(data)); // Nuevo filtro
 
     filterTable(data); // Mostrar tabla
 }
