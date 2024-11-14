@@ -332,42 +332,50 @@ function filterTable(data) {
     const showAudits = document.getElementById('showAudits').checked;
     const showPending = document.getElementById('showPending').checked;
 
-    let filteredData = data.slice(1); // Excluir cabecera
+    let filteredData = new Set(); // Usamos un Set para evitar duplicados
 
-    if (showClaims || showAudits || showPending) {
-        filteredData = filteredData.filter(row => {
+    if (showClaims) {
+        data.slice(1).forEach(row => {
             const isClaim = row[11] && row[11].includes('R');
-            const isPending = row[13] && row[13] === 'En espera'; // Columna N (índice 13)
-            const timeCol49Seconds = convertToSeconds(row[48]); // Columna 49 (índice 48)
+            if (isClaim) {
+                filteredData.add(row);
+            }
+        });
+    }
 
-            const isPendingWithTime = isPending && timeCol49Seconds > 0; // Validación "En espera" con tiempo mayor a 0
-
+    if (showAudits) {
+        data.slice(1).forEach(row => {
             const tRespSeconds = convertToSeconds(row[0]);
             const tResolSeconds = convertToSeconds(row[1]);
             const maxTRespSeconds = convertToSeconds(row[4]);
             const maxTResolSeconds = convertToSeconds(row[5]);
 
-            let passesFilter = true;
+            const auditCondition = maxTRespSeconds > 0 && maxTResolSeconds > 0 &&
+                (tRespSeconds > maxTRespSeconds || tResolSeconds >= maxTResolSeconds);
 
-            if (showClaims) {
-                passesFilter = passesFilter && isClaim; // Mantener las filas que cumplen con "Reclamaciones"
+            if (auditCondition) {
+                filteredData.add(row);
             }
-
-            if (showAudits) {
-                const auditCondition = maxTRespSeconds > 0 && maxTResolSeconds > 0 && 
-                    (tRespSeconds > maxTRespSeconds || tResolSeconds >= maxTResolSeconds);
-                passesFilter = passesFilter && auditCondition; // Mantener filas susceptibles de auditoría
-            }
-
-            if (showPending) {
-                passesFilter = passesFilter && isPendingWithTime; // Mantener filas en espera con tiempo > 0
-            }
-
-            return passesFilter;
         });
     }
 
-    createTable([data[0], ...filteredData]);
+    if (showPending) {
+        data.slice(1).forEach(row => {
+            const isPending = row[13] && row[13] === 'En espera'; // Columna N (índice 13)
+            const timeCol49Seconds = convertToSeconds(row[48]); // Columna 49 (índice 48)
+
+            if (isPending && timeCol49Seconds > 0) {
+                filteredData.add(row);
+            }
+        });
+    }
+
+    // Si no hay filtros aplicados, mostrar todos los datos.
+    if (!showClaims && !showAudits && !showPending) {
+        filteredData = new Set(data.slice(1)); // Todos los datos sin filtros
+    }
+
+    createTable([data[0], ...Array.from(filteredData)]); // Convertimos el Set a Array para crear la tabla
 }
 
 /**
