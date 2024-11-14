@@ -326,7 +326,6 @@ function enableFiltersAndShowTable(data) {
     filterTable(data); // Mostrar tabla
 }
 
-
 // Función para filtrar la tabla
 function filterTable(data) {
     const showClaims = document.getElementById('showClaims').checked;
@@ -338,7 +337,7 @@ function filterTable(data) {
     if (showClaims || showAudits || showPending) {
         filteredData = filteredData.filter(row => {
             const isClaim = row[11] && row[11].includes('R');
-            const isPending = row[13] && row[13] === 'En espera'; // Columna N (indice 13)
+            const isPending = row[13] && row[13] === 'En espera'; // Columna N (índice 13)
             const timeCol49Seconds = convertToSeconds(row[48]); // Columna 49 (índice 48)
 
             const isPendingWithTime = isPending && timeCol49Seconds > 0; // Validación "En espera" con tiempo mayor a 0
@@ -348,22 +347,28 @@ function filterTable(data) {
             const maxTRespSeconds = convertToSeconds(row[4]);
             const maxTResolSeconds = convertToSeconds(row[5]);
 
-            if (showClaims && isClaim) return true;
+            let passesFilter = true;
 
-            if (showAudits) {
-                if (maxTRespSeconds === 0 || maxTResolSeconds === 0) return false;
-                return tRespSeconds > maxTRespSeconds || tResolSeconds >= maxTResolSeconds;
+            if (showClaims) {
+                passesFilter = passesFilter && isClaim; // Mantener las filas que cumplen con "Reclamaciones"
             }
 
-            if (showPending && isPendingWithTime) return true;
+            if (showAudits) {
+                const auditCondition = maxTRespSeconds > 0 && maxTResolSeconds > 0 && 
+                    (tRespSeconds > maxTRespSeconds || tResolSeconds >= maxTResolSeconds);
+                passesFilter = passesFilter && auditCondition; // Mantener filas susceptibles de auditoría
+            }
 
-            return false;
+            if (showPending) {
+                passesFilter = passesFilter && isPendingWithTime; // Mantener filas en espera con tiempo > 0
+            }
+
+            return passesFilter;
         });
     }
 
     createTable([data[0], ...filteredData]);
 }
-
 
 /**
  * Crea y muestra una tabla con los datos proporcionados.
