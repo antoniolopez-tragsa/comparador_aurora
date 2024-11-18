@@ -392,8 +392,8 @@ function createTable(data) {
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    const columnsToShow = [12, 0, 1, 4, 5, 11, 14];
-    const timeColumns = [0, 1, 4, 5];
+    const columnsToShow = [12, 0, 1, 4, 5, 48, 11, 14];
+    const timeColumns = [0, 1, 4, 5, 48];
 
     columnsToShow.forEach((colIndex) => {
         const th = document.createElement('th');
