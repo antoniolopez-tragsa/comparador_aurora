@@ -361,10 +361,9 @@ function filterTable(data) {
 
     if (showPending) {
         data.slice(1).forEach(row => {
-            const isPending = row[13] && row[13] === 'En espera'; // Columna N (índice 13)
             const timeCol49Seconds = convertToSeconds(row[48]); // Columna 49 (índice 48)
 
-            if (isPending && timeCol49Seconds > 0) {
+            if (timeCol49Seconds > 0) {
                 filteredData.add(row);
             }
         });
