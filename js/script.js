@@ -416,7 +416,7 @@ function createTable(data) {
     const fragment = document.createDocumentFragment();
 
     const sortedData = data.slice(1).sort((a, b) => parseFloat(b[12]) - parseFloat(a[12]));
-    sortedData.slice(1).forEach((row) => {
+    sortedData.forEach((row) => {
         const tr = document.createElement('tr');
 
         columnsToShow.forEach((colIndex) => {
