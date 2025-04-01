@@ -448,8 +448,7 @@ function createTable(data) {
             const td = document.createElement('td');
 
             if (colIndex === 11) {
-                const category = getCategoryByFirstChar(row[colIndex]);
-                td.appendChild(category);
+                td.textContent = getCategoryByFirstChar(row[colIndex]) || '';
             } else if (colIndex === 12) {
                 const link = document.createElement('a');
                 link.href = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${row[colIndex]}`;
