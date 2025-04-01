@@ -488,6 +488,7 @@ function createTable(data) {
     excelImage.alt = 'Excel';
     excelButton.appendChild(excelImage);
 
+    resultContainer.appendChild(excelButton);
     resultContainer.appendChild(table);
     resultContainer.style.display = 'block';
 }
