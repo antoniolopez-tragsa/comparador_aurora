@@ -187,18 +187,17 @@
 
 /* Estilo para el botón de exportar a Excel */
 #exportarExcel {
-    padding: var(--spacing-small) var(--spacing-medium);
-    background-color: var(--color-primary); /* Color principal de la aplicación */
-    color: var(--color-white); /* Texto blanco */
+    display: block;
+    width: 100%;
+    padding: var(--spacing-small);
+    margin-top: var(--spacing-medium);
+    font-size: 1em;
+    color: var(--color-white);
+    background-color: var(--color-primary);
     border: none;
     border-radius: 4px;
-    font-size: 1rem;
     cursor: pointer;
-    transition: background-color var(--transition-speed) ease;
-    margin-top: var(--spacing-small); /* Espacio superior */
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Espacio entre el texto y la imagen */
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
 #exportarExcel img {
@@ -207,12 +206,8 @@
 }
 
 #exportarExcel:hover {
-    background-color: var(--color-primary-dark); /* Color más oscuro al pasar el cursor */
-}
-
-#exportarExcel:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 78, 0, 0.5); /* Resaltado con el color principal */
+    background-color: var(--color-primary-dark);
+    transform: scale(1.05);
 }
 
 /* Pie de página */
@@ -273,7 +268,7 @@
         font-size: 0.9em;
     }
 
-    .form__button {
+    .form__button, #exportarExcel {
         font-size: 0.9em;
     }
 }
