@@ -188,7 +188,6 @@
 /* Estilo para el botón de exportar a Excel */
 #exportarExcel {
     display: block;
-    width: 100%;
     padding: var(--spacing-small);
     margin-top: var(--spacing-medium);
     font-size: 1em;
