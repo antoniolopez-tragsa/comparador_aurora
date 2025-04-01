@@ -560,7 +560,11 @@ document.getElementById('compareButton').addEventListener('click', function () {
 });
 
 // Añade un evento al botón de exportar para generar y descargar un archivo Excel
-document.getElementById('exportarExcel').addEventListener('click', exportToExcel);
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'exportarExcel') {
+        exportToExcel();
+    }
+});
 
 // Función que exporta los datos de la tabla a un archivo Excel
 function exportToExcel() {
