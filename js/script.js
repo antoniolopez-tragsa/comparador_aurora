@@ -598,7 +598,6 @@ function exportToExcel() {
 
         // Genera el archivo Excel y dispara la descarga
         XLSX.writeFile(wb, 'aurora.xlsx');
-        alert('Archivo exportado con éxito');
     } catch (error) {
         console.error('Error al exportar la tabla:', error);
         alert('Ocurrió un error al exportar la tabla');
