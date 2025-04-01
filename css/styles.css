@@ -115,7 +115,7 @@
 .results {
     display: none;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1300px;
     padding: var(--spacing-medium);
     border: 1px solid var(--color-border);
     border-radius: 8px;
@@ -123,7 +123,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all var(--transition-speed) ease;
     overflow-x: auto;
-    /* Habilitar scroll horizontal */
 }
 
 .results--visible {
@@ -139,24 +138,20 @@
 
 .results__table a {
     color: var(--color-primary);
-    /* Naranja como el color principal */
     text-decoration: underline;
-    /* Subrayado para mantener consistencia */
     transition: color var(--transition-speed) ease;
-    /* Transición suave para el hover */
 }
 
 .results__table a:hover {
     color: var(--color-primary-dark);
-    /* Un tono más oscuro de naranja al hacer hover */
 }
 
-.results__table th,
-.results__table td {
-    padding: var(--spacing-small);
+.results__table th, .results__table td {
+    padding: var(--spacing-small) 15px;
     border: 1px solid #ddd;
     text-align: left;
     transition: background-color var(--transition-speed) ease;
+    word-break: break-word;
 }
 
 .results__table th {
@@ -175,12 +170,11 @@
 
 .results__table tr:hover {
     background-color: #ffe5d1;
-    transform: scale(1.02);
+    transform: scale(1.01);
 }
 
 .results__table td:hover {
     background-color: #ffd9b3;
-    transform: scale(1.03);
 }
 
 .empty-cell {
@@ -217,29 +211,26 @@
 }
 
 .github-logo {
-    width: 32px; /* Tamaño ajustable */
-    height: 32px; /* Mantener proporciones */
+    width: 32px;
+    height: 32px;
     transition: transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
 }
 
 .github-logo:hover {
-    transform: scale(1.1); /* Aumentar ligeramente el tamaño al pasar el ratón */
-    opacity: 0.8; /* Hacerlo un poco más transparente */
+    transform: scale(1.1);
+    opacity: 0.8;
 }
 
 /* Estilos para los filtros */
 .filter__label {
     display: block;
-    /* Hace que los checkboxes se apilen verticalmente */
     margin-bottom: var(--spacing-small);
-    /* Espaciado entre checkboxes */
     font-weight: bold;
     color: var(--color-text);
 }
 
 .filter-checkbox {
     margin-right: var(--spacing-small);
-    /* Espaciado entre checkbox y texto */
 }
 
 /* Scroll horizontal y ajuste de tablas para pantallas pequeñas */
@@ -251,11 +242,9 @@
     .results__table th,
     .results__table td {
         font-size: 0.9em;
-        /* Reducir el tamaño de la fuente */
     }
 
     .form__button {
         font-size: 0.9em;
-        /* Ajustar botones también */
     }
 }
