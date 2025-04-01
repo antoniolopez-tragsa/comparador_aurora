@@ -412,6 +412,7 @@ function createTable(data) {
 
     const table = document.createElement('table');
     table.classList.add('results__table');
+    table.setAttribute('id', 'results__table');
     table.setAttribute('role', 'table');
 
     const header = document.createElement('thead');
@@ -473,6 +474,19 @@ function createTable(data) {
 
     body.appendChild(fragment);
     table.appendChild(body);
+
+    // Crear el botón en el DOM
+    const excelButton = document.createElement('button');
+    excelButton.id = 'exportarExcel';
+    excelButton.type = 'button';
+    excelButton.innerHTML = 'Exportar a '; // Texto del botón
+
+    // Crear la imagen y añadirla al botón
+    const excelImage = document.createElement('img');
+    excelImage.id = 'imagen-excel';
+    excelImage.src = 'img/excel.png';
+    excelImage.alt = 'Excel';
+    excelButton.appendChild(excelImage);
 
     resultContainer.appendChild(table);
     resultContainer.style.display = 'block';
@@ -543,3 +557,24 @@ document.getElementById('compareButton').addEventListener('click', function () {
 
     disableFieldset(); // Deshabilitar fieldset al comparar
 });
+
+// Añade un evento al botón de exportar para generar y descargar un archivo Excel
+document.getElementById('exportarExcel').addEventListener('click', exportToExcel);
+
+// Función que exporta los datos de la tabla a un archivo Excel
+function exportToExcel() {
+    // Obtén los datos de la tabla
+    const table = document.getElementById('results__table');
+
+    // Convierte la tabla HTML a un array de objetos
+    const ws = XLSX.utils.table_to_sheet(table);
+
+    // Crea un nuevo libro de trabajo
+    const wb = XLSX.utils.book_new();
+
+    // Añade la hoja al libro de trabajo
+    XLSX.utils.book_append_sheet(wb, ws, 'AURORA');
+
+    // Genera el archivo Excel y dispara la descarga
+    XLSX.writeFile(wb, 'aurora.xlsx');
+}
