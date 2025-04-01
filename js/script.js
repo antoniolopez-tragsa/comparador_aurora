@@ -453,6 +453,7 @@ function createTable(data) {
             } else if (colIndex === 12) {
                 const link = document.createElement('a');
                 link.href = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${row[colIndex]}`;
+                link.setAttribute('title', row[16]); // Que salga la descripción cuando pasas el ratón por encima
                 link.textContent = row[colIndex];
                 link.target = '_blank';
                 td.appendChild(link);
