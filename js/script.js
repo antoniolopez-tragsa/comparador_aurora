@@ -378,6 +378,31 @@ function filterTable(data) {
 }
 
 /**
+ * Función que devuelve la categoría correspondiente al carácter dado.
+ *
+ * @param {string} char - El carácter que representa una categoría.
+ * @returns {string} - La categoría correspondiente o el propio carácter si no coincide con ninguna categoría.
+ */
+function getCategoryByFirstChar(char) {
+    switch (char) {
+        case 'I':
+            return 'Incidencia';
+        case 'S':
+            return 'Solicitud';
+        case 'R':
+            return 'Reclamación';
+        case 'A':
+            return 'Agradecimiento / Sugerencia';
+        case 'P':
+            return 'Petición';
+        case 'V':
+            return 'Inspección visual';
+        default:
+            return char;
+    }
+}
+
+/**
  * Crea y muestra una tabla con los datos proporcionados.
  * @param {Array} data - Datos de la hoja de cálculo.
  */
@@ -422,7 +447,10 @@ function createTable(data) {
         columnsToShow.forEach((colIndex) => {
             const td = document.createElement('td');
 
-            if (colIndex === 12) {
+            if (colIndex === 11) {
+                const category = getCategoryByFirstChar(row[colIndex]);
+                td.appendChild(category);
+            } else if (colIndex === 12) {
                 const link = document.createElement('a');
                 link.href = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${row[colIndex]}`;
                 link.textContent = row[colIndex];
