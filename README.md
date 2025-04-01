@@ -1,3 +1,4 @@
+
 # Comparador de Listados de Incidencias en AURORA
 
 Este proyecto es una aplicación web estática que permite comparar listados de incidencias en el sistema AURORA. Ofrece funcionalidades para cargar y visualizar archivos de Excel, aplicar filtros específicos y comparar datos entre diferentes listados para identificar cambios críticos.
@@ -16,6 +17,8 @@ Este proyecto es una aplicación web estática que permite comparar listados de 
 - **Comparación de Archivos**:
   - Identifica cambios en la criticidad de las incidencias entre dos listados.
   - Resalta las diferencias encontradas para una fácil identificación.
+- **Exportación a Excel**:
+  - Permite exportar los resultados de la comparación a un archivo Excel para su análisis posterior.
 
 ## Estructura del Proyecto
 
@@ -43,6 +46,8 @@ Este proyecto es una aplicación web estática que permite comparar listados de 
 3. **Comparación de Listados**:
    - Si has cargado dos archivos, la aplicación comparará automáticamente las incidencias entre ambos.
    - Las diferencias en la criticidad se resaltarán para facilitar su identificación.
+4. **Exportación de Resultados**:
+   - Después de la comparación, puedes exportar los resultados a un archivo Excel para guardarlos o analizarlos posteriormente.
 
 ## Consideraciones
 
