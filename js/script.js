@@ -570,16 +570,37 @@ document.addEventListener('click', function(e) {
 function exportToExcel() {
     // Obtén los datos de la tabla
     const table = document.getElementById('results__table');
+    if (!table) {
+        alert('La tabla no existe');
+        return;
+    }
 
-    // Convierte la tabla HTML a un array de objetos
-    const ws = XLSX.utils.table_to_sheet(table);
+    // Clonar la tabla para procesarla sin afectar el DOM original
+    const clonedTable = table.cloneNode(true);
 
-    // Crea un nuevo libro de trabajo
-    const wb = XLSX.utils.book_new();
+    // Eliminar los enlaces y mantener solo el texto
+    const links = clonedTable.querySelectorAll('a');
+    links.forEach(link => {
+        const text = link.textContent || link.innerText;
+        const parent = link.parentElement;
+        parent.replaceChild(document.createTextNode(text), link);
+    });
 
-    // Añade la hoja al libro de trabajo
-    XLSX.utils.book_append_sheet(wb, ws, 'AURORA');
+    try {
+        // Convierte la tabla HTML modificada a una hoja de Excel
+        const ws = XLSX.utils.table_to_sheet(clonedTable);
 
-    // Genera el archivo Excel y dispara la descarga
-    XLSX.writeFile(wb, 'aurora.xlsx');
+        // Crea un nuevo libro de trabajo
+        const wb = XLSX.utils.book_new();
+
+        // Añade la hoja al libro de trabajo
+        XLSX.utils.book_append_sheet(wb, ws, 'AURORA');
+
+        // Genera el archivo Excel y dispara la descarga
+        XLSX.writeFile(wb, 'aurora.xlsx');
+        alert('Archivo exportado con éxito');
+    } catch (error) {
+        console.error('Error al exportar la tabla:', error);
+        alert('Ocurrió un error al exportar la tabla');
+    }
 }
