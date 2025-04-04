@@ -377,8 +377,6 @@ function filterTable(data) {
     // Nuevo filtro para ocultar filas que contengan 'HUMV' en la columna 4 (índice 3)
     if (!showHospital) {
         data.slice(1).forEach(row => {
-            filteredData.add(row);
-
             const workgroup = row[3];
             if (workgroup && workgroup.includes('HUMV')) {
                 filteredData.delete(row); // Eliminar la fila si contiene 'HUMV'
