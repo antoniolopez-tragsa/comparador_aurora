@@ -1,6 +1,6 @@
 /**
- * Convierte una cadena de fecha en formato "DD/MM/YYYY HH:MM:SS" a un objeto Date.
- * @param {string} dateString - La cadena de fecha en formato "DD/MM/YYYY HH:MM:SS".
+ * Convierte una cadena de fecha en formato 'DD/MM/YYYY HH:MM:SS' a un objeto Date.
+ * @param {string} dateString - La cadena de fecha en formato 'DD/MM/YYYY HH:MM:SS'.
  * @returns {Date|null} - Un objeto Date correspondiente a la cadena o null si el formato es inválido.
  */
 function parseDate(dateString) {
@@ -316,9 +316,13 @@ function enableFiltersAndShowTable(data) {
     document.getElementById('filterOptions').style.display = 'block';
     document.getElementById('showClaims').checked = false;
     document.getElementById('showAudits').checked = false;
+    document.getElementById('showPending').checked = false;
+    document.getElementById('showHospital').checked = true; // Nuevo filtro, marcado por defecto
 
     document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
     document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
+    document.getElementById('showPending').addEventListener('change', () => filterTable(data));
+    document.getElementById('showHospital').addEventListener('change', () => filterTable(data)); // Nuevo listener
 
     // Mostrar el botón limpiar
     document.getElementById('clearButton').style.display = 'block';
@@ -331,6 +335,7 @@ function filterTable(data) {
     const showClaims = document.getElementById('showClaims').checked;
     const showAudits = document.getElementById('showAudits').checked;
     const showPending = document.getElementById('showPending').checked;
+    const showHospital = document.getElementById('showHospital').checked; // Nuevo filtro
 
     let filteredData = new Set(); // Usamos un Set para evitar duplicados
 
@@ -369,8 +374,20 @@ function filterTable(data) {
         });
     }
 
+    // Nuevo filtro para ocultar filas que contengan 'HUMV' en la columna 4 (índice 3)
+    if (!showHospital) {
+        data.slice(1).forEach(row => {
+            filteredData.add(row);
+
+            const workgroup = row[3];
+            if (workgroup && workgroup.includes('HUMV')) {
+                filteredData.delete(row); // Eliminar la fila si contiene 'HUMV'
+            }
+        });
+    }
+
     // Si no hay filtros aplicados, mostrar todos los datos.
-    if (!showClaims && !showAudits && !showPending) {
+    if (!showClaims && !showAudits && !showPending && showHospital) {
         filteredData = new Set(data.slice(1)); // Todos los datos sin filtros
     }
 
@@ -495,8 +512,8 @@ function createTable(data) {
 }
 
 /**
- * Convierte un tiempo en formato "Xh Ym Zs" a segundos.
- * @param {string} timeString - Cadena de tiempo en formato "Xh Ym Zs".
+ * Convierte un tiempo en formato 'Xh Ym Zs' a segundos.
+ * @param {string} timeString - Cadena de tiempo en formato 'Xh Ym Zs'.
  * @returns {number} - Tiempo total en segundos.
  */
 function convertToSeconds(timeString) {
