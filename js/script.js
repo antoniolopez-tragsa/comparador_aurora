@@ -543,24 +543,6 @@ function enableFieldset() {
 }
 
 /**
- * Muestra los datos y habilita el fieldset.
- * @param {Array} data - Datos a mostrar.
- */
-function enableFiltersAndShowTable(data) {
-    enableFieldset(); // Habilitar fieldset
-    document.getElementById('filterOptions').style.display = 'block';
-    document.getElementById('showClaims').checked = false;
-    document.getElementById('showAudits').checked = false;
-    document.getElementById('showPending').checked = false; // Nuevo filtro
-
-    document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
-    document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
-    document.getElementById('showPending').addEventListener('change', () => filterTable(data)); // Nuevo filtro
-
-    filterTable(data); // Mostrar tabla
-}
-
-/**
  * Comparar archivos.
  */
 document.getElementById('compareButton').addEventListener('click', function () {
