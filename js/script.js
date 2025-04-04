@@ -317,7 +317,7 @@ function enableFiltersAndShowTable(data) {
     document.getElementById('showClaims').checked = false;
     document.getElementById('showAudits').checked = false;
     document.getElementById('showPending').checked = false;
-    document.getElementById('showHospital').checked = true; // Nuevo filtro, marcado por defecto
+    document.getElementById('showHospital').checked = false; // Nuevo filtro
 
     document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
     document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
@@ -378,8 +378,8 @@ function filterTable(data) {
     if (!showHospital) {
         data.slice(1).forEach(row => {
             const workgroup = row[3];
-            if (workgroup && workgroup.includes('HUMV')) {
-                filteredData.delete(row); // Eliminar la fila si contiene 'HUMV'
+            if (workgroup && !workgroup.includes('HUMV')) {
+                filteredData.add(row); // Eliminar la fila si contiene 'HUMV'
             }
         });
     }
