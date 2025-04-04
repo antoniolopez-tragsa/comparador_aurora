@@ -317,12 +317,10 @@ function enableFiltersAndShowTable(data) {
     document.getElementById('showClaims').checked = false;
     document.getElementById('showAudits').checked = false;
     document.getElementById('showPending').checked = false;
-    document.getElementById('showHospital').checked = false; // Nuevo filtro
 
     document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
     document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
     document.getElementById('showPending').addEventListener('change', () => filterTable(data));
-    document.getElementById('showHospital').addEventListener('change', () => filterTable(data)); // Nuevo listener
 
     // Mostrar el botón limpiar
     document.getElementById('clearButton').style.display = 'block';
@@ -335,7 +333,6 @@ function filterTable(data) {
     const showClaims = document.getElementById('showClaims').checked;
     const showAudits = document.getElementById('showAudits').checked;
     const showPending = document.getElementById('showPending').checked;
-    const showHospital = document.getElementById('showHospital').checked; // Nuevo filtro
 
     let filteredData = new Set(); // Usamos un Set para evitar duplicados
 
@@ -374,19 +371,8 @@ function filterTable(data) {
         });
     }
 
-    // Nuevo filtro para ocultar filas que contengan 'HUMV' en la columna 4 (índice 3)
-    if (showHospital) {
-        data.slice(1).forEach(row => {
-            const workgroup = row[3];
-
-            if (workgroup && workgroup.includes('HUMV')) {
-                filteredData.add(row); // Añadir la fila si contiene 'HUMV'
-            }
-        });
-    }
-
     // Si no hay filtros aplicados, mostrar todos los datos.
-    if (!showClaims && !showAudits && !showPending && !showHospital) {
+    if (!showClaims && !showAudits && !showPending) {
         filteredData = new Set(data.slice(1)); // Todos los datos sin filtros
     }
 
