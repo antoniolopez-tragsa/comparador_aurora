@@ -375,17 +375,18 @@ function filterTable(data) {
     }
 
     // Nuevo filtro para ocultar filas que contengan 'HUMV' en la columna 4 (índice 3)
-    if (!showHospital) {
+    if (showHospital) {
         data.slice(1).forEach(row => {
             const workgroup = row[3];
-            if (workgroup && !workgroup.includes('HUMV')) {
-                filteredData.add(row); // Eliminar la fila si contiene 'HUMV'
+
+            if (workgroup && workgroup.includes('HUMV')) {
+                filteredData.add(row); // Añadir la fila si contiene 'HUMV'
             }
         });
     }
 
     // Si no hay filtros aplicados, mostrar todos los datos.
-    if (!showClaims && !showAudits && !showPending && showHospital) {
+    if (!showClaims && !showAudits && !showPending && !showHospital) {
         filteredData = new Set(data.slice(1)); // Todos los datos sin filtros
     }
 
