@@ -447,6 +447,11 @@ function createTable(data) {
     sortedData.forEach((row) => {
         const tr = document.createElement('tr');
 
+        // Si está Finalizada, que salga en cursiva
+        if (row[13] === 'Finalizada') {
+            tr.classList.add('italic');
+        }
+
         columnsToShow.forEach((colIndex) => {
             const td = document.createElement('td');
 
