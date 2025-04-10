@@ -122,6 +122,9 @@
     background-color: var(--color-white);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all var(--transition-speed) ease;
+
+    max-height: calc(100vh - 200px); /* Ajusta 200px según el espacio que ocupan header/form */
+    overflow-y: auto;
     overflow-x: auto;
 }
 
@@ -157,6 +160,10 @@
     background-color: var(--color-primary);
     color: var(--color-white);
     font-weight: bold;
+
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 
 .results__table tr:nth-child(even) {
