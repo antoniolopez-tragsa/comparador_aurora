@@ -459,6 +459,11 @@ function createTable(data) {
             tr.classList.add('italic');
         }
 
+        // Si contiene 'HUMV' en la columna 4 (índice 3), aplica clase dark
+        if (row[3] && row[3].toString().includes('HUMV')) {
+            tr.classList.add('dark-row');
+        }
+
         columnsToShow.forEach((colIndex) => {
             const td = document.createElement('td');
 
@@ -556,7 +561,7 @@ document.getElementById('compareButton').addEventListener('click', function () {
 });
 
 // Añade un evento al botón de exportar para generar y descargar un archivo Excel
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (e.target && e.target.id === 'exportarExcel') {
         exportToExcel();
     }
