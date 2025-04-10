@@ -210,9 +210,14 @@
 
 .legend {
     margin-top: var(--spacing-small);
+    padding: var(--spacing-small);
     font-size: 0.9em;
     color: var(--color-text);
+    border: 1px dashed var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-white);
 }
+
 
 /* Estilo para el botón de exportar a Excel */
 #exportarExcel {
