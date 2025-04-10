@@ -208,6 +208,12 @@
     font-weight: bold;
 }
 
+.legend {
+    margin-top: var(--spacing-small);
+    font-size: 0.9em;
+    color: var(--color-text);
+}
+
 /* Estilo para el botón de exportar a Excel */
 #exportarExcel {
     display: block;
