@@ -214,10 +214,16 @@
     font-size: 0.9em;
     color: var(--color-text);
     border: 1px dashed var(--color-border);
-    border-radius: 6px;
+    border-radius: 8px;
     background-color: var(--color-white);
 }
 
+.legend legend {
+    font-weight: bold;
+    padding: 0 10px;
+    font-size: 1em;
+    color: var(--color-primary);
+}
 
 /* Estilo para el botón de exportar a Excel */
 #exportarExcel {
