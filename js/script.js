@@ -459,9 +459,9 @@ function createTable(data) {
             tr.classList.add('italic');
         }
 
-        // Si contiene 'HUMV' en la columna 4 (índice 3), aplica clase dark
-        if (row[3] && row[3].toString().includes('HUMV')) {
-            tr.classList.add('dark-row');
+        // Si no contiene 'HUMV' en la columna 4 (índice 3), que salga en negrita
+        if (row[3] && !row[3].toString().includes('HUMV')) {
+            tr.classList.add('bold');
         }
 
         columnsToShow.forEach((colIndex) => {

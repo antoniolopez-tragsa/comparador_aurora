@@ -204,15 +204,8 @@
     font-style: italic;
 }
 
-.dark-row {
-    background-color: #444;
-    color: var(--color-white);
-}
-
-.results__table tr.dark-row {
-    background-color: #333 !important;
-    color: var(--color-white) !important;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+.bold {
+    font-style: bold;
 }
 
 /* Estilo para el botón de exportar a Excel */
