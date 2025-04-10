@@ -7,11 +7,22 @@
     --color-border: #ccc;
     --color-error: red;
 
+    --spacing-xsmall: 5px;
     --spacing-small: 10px;
     --spacing-medium: 20px;
     --spacing-large: 30px;
 
     --transition-speed: 0.3s;
+}
+
+/* Modo oscuro */
+.dark {
+    --color-bg: #1a1a1a;
+    --color-text: #f0f0f0;
+    --color-white: #2c2c2c;
+    --color-border: #444;
+    --color-primary: #ff6b1f;
+    --color-primary-dark: #cc5500;
 }
 
 /* General */
@@ -59,7 +70,7 @@
     background-color: var(--color-white);
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     margin-bottom: var(--spacing-medium);
     transition: box-shadow var(--transition-speed) ease;
 }
@@ -74,8 +85,11 @@
 .form__input {
     width: 100%;
     padding: var(--spacing-small);
-    margin-top: 5px;
+    margin-top: var(--spacing-xsmall);;
     transition: box-shadow var(--transition-speed) ease;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .form__button {
@@ -120,7 +134,7 @@
     border: 1px solid var(--color-border);
     border-radius: 8px;
     background-color: var(--color-white);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     transition: all var(--transition-speed) ease;
     overflow-x: auto;
 }
@@ -146,7 +160,8 @@
     color: var(--color-primary-dark);
 }
 
-.results__table th, .results__table td {
+.results__table th,
+.results__table td {
     padding: var(--spacing-small) 15px;
     border: 1px solid #ddd;
     text-align: left;
@@ -169,7 +184,7 @@
 
 .results__table tr:hover {
     background-color: #ffe5d1;
-    transform: scale(1.01);
+    box-shadow: inset 0 0 0 1px #ffa366;
 }
 
 .results__table td:hover {
@@ -204,7 +219,8 @@
 }
 
 #exportarExcel img {
-    height: 20px; /* Ajusta el tamaño de la imagen si es necesario */
+    height: 20px;
+    /* Ajusta el tamaño de la imagen si es necesario */
     vertical-align: middle;
 }
 
@@ -225,6 +241,7 @@
 .footer__link {
     color: var(--color-white);
     text-decoration: underline;
+    transition: color var(--transition-speed) ease;
 }
 
 .footer__link:hover {
@@ -260,6 +277,12 @@
     margin-right: var(--spacing-small);
 }
 
+/* Estilos para el foco */
+:focus {
+    outline: 2px solid var(--color-primary-dark);
+    outline-offset: 2px;
+}
+
 /* Scroll horizontal y ajuste de tablas para pantallas pequeñas */
 @media (max-width: 768px) {
     .results {
@@ -271,7 +294,8 @@
         font-size: 0.9em;
     }
 
-    .form__button, #exportarExcel {
+    .form__button,
+    #exportarExcel {
         font-size: 0.9em;
     }
 }
