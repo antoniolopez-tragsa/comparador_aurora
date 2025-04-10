@@ -83,7 +83,7 @@
 }
 
 .form__input {
-    width: 100%;
+    width: 97%;
     padding: var(--spacing-small);
     margin-top: var(--spacing-xsmall);;
     transition: box-shadow var(--transition-speed) ease;
