@@ -303,8 +303,12 @@ function showCriticidadChangesTable(changes, date1List, date2List) {
  */
 function showError(message) {
     const errorMessage = document.getElementById('errorMessage');
-    errorMessage.textContent = message; // Mostrar mensaje de error
-    errorMessage.style.display = 'block'; // Asegurar visibilidad del mensaje
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
+
+    setTimeout(() => {
+        errorMessage.style.display = 'none';
+    }, 5000); // Ocultar después de 5 segundos
 }
 
 /**
@@ -313,19 +317,22 @@ function showError(message) {
  */
 function enableFiltersAndShowTable(data) {
     enableFieldset(); // Habilitar fieldset
+    const filters = ['showClaims', 'showAudits', 'showPending'];
+
+    filters.forEach(id => {
+        const checkbox = document.getElementById(id);
+        checkbox.checked = false;
+
+        // Reemplaza los event listeners para evitar duplicados
+        checkbox.replaceWith(checkbox.cloneNode(true));
+        const newCheckbox = document.getElementById(id);
+        newCheckbox.addEventListener('change', () => filterTable(data));
+    });
+
     document.getElementById('filterOptions').style.display = 'block';
-    document.getElementById('showClaims').checked = false;
-    document.getElementById('showAudits').checked = false;
-    document.getElementById('showPending').checked = false;
-
-    document.getElementById('showClaims').addEventListener('change', () => filterTable(data));
-    document.getElementById('showAudits').addEventListener('change', () => filterTable(data));
-    document.getElementById('showPending').addEventListener('change', () => filterTable(data));
-
-    // Mostrar el botón limpiar
     document.getElementById('clearButton').style.display = 'block';
 
-    filterTable(data); // Mostrar tabla
+    filterTable(data);
 }
 
 // Función para filtrar la tabla
@@ -507,14 +514,13 @@ function createTable(data) {
  * @returns {number} - Tiempo total en segundos.
  */
 function convertToSeconds(timeString) {
-    if (!timeString) return 0;
+    if (!timeString || typeof timeString !== 'string') return 0;
     const timeRegex = /(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/;
     const match = timeString.match(timeRegex);
 
     if (!match) return 0;
 
     const [, hours = 0, minutes = 0, seconds = 0] = match.map(val => (val ? Number(val) : 0));
-
     return (hours * 3600) + (minutes * 60) + seconds;
 }
 
@@ -586,8 +592,10 @@ function exportToExcel() {
         // Añade la hoja al libro de trabajo
         XLSX.utils.book_append_sheet(wb, ws, 'AURORA');
 
-        // Genera el archivo Excel y dispara la descarga
-        XLSX.writeFile(wb, 'aurora.xlsx');
+        // Genera el archivo Excel y dispara la descarga con la fecha actual
+        const now = new Date();
+        const formattedDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+        XLSX.writeFile(wb, `aurora_${formattedDate}.xlsx`);
     } catch (error) {
         console.error('Error al exportar la tabla:', error);
         alert('Ocurrió un error al exportar la tabla');
