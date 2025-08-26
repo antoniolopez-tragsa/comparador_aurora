@@ -1,4 +1,3 @@
-
 # Comparador de Listados de Incidencias en AURORA
 
 Este proyecto es una aplicación web estática que permite comparar listados de incidencias en el sistema AURORA. Ofrece funcionalidades para cargar y visualizar archivos de Excel, aplicar filtros específicos y comparar datos entre diferentes listados para identificar cambios críticos.
@@ -61,3 +60,13 @@ Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para má
 ## Contacto
 
 Para más información o consultas, puedes visitar el repositorio en GitHub: [https://github.com/antoniolopez-tragsa/comparador_aurora](https://github.com/antoniolopez-tragsa/comparador_aurora)
+
+
+## Nueva Funcionalidad: Última Incidencia Leída
+
+- **Persistencia en LocalStorage**: al hacer clic en una incidencia (columna Código petición, `row[12]`), la aplicación guarda ese código como la última leída en el navegador.
+- **Indicador visual**: aparece un recuadro encima de la tabla que muestra la última incidencia seleccionada, con dos botones:
+  - **Ir a fila**: desplaza y resalta la fila correspondiente en la tabla.
+  - **Borrar**: elimina la marca y oculta el indicador.
+- **Resaltado en tabla**: la fila guardada se resalta automáticamente al cargar o refrescar los datos.
+- **Estilos mejorados**: integración visual con los colores principales de la aplicación, con fondo suave, sombra ligera y gradientes para el resaltado.

@@ -1,3 +1,81 @@
+
+// === Persistencia de última incidencia leída (columna row[12]) ===
+const LAST_READ_KEY = 'ultimaIncidenciaAurora';
+
+function getLastRead() {
+    try { return localStorage.getItem(LAST_READ_KEY) || null; } catch { return null; }
+}
+
+function setLastRead(id) {
+    try { localStorage.setItem(LAST_READ_KEY, id); } catch {}
+    updateLastReadUI();
+}
+
+function clearLastRead() {
+    try { localStorage.removeItem(LAST_READ_KEY); } catch {}
+    updateLastReadUI();
+    // Quitar resaltado si hay tabla
+    const table = document.getElementById('results__table');
+    if (table) {
+        table.querySelectorAll('tr.row-last-read').forEach(tr => tr.classList.remove('row-last-read'));
+    }
+}
+
+function updateLastReadUI() {
+    const indicator = document.getElementById('lastReadIndicator');
+    const valueEl = document.getElementById('lastReadValue');
+    const last = getLastRead();
+    if (!indicator || !valueEl) return;
+    if (last) {
+        indicator.hidden = false;
+        valueEl.textContent = last;
+    } else {
+        indicator.hidden = true;
+        valueEl.textContent = '—';
+    }
+}
+
+function highlightLastReadInTable() {
+    const last = getLastRead();
+    const table = document.getElementById('results__table');
+    if (!table || !last) return;
+    // Limpiar marcas previas
+    table.querySelectorAll('tr.row-last-read').forEach(tr => tr.classList.remove('row-last-read'));
+    // Buscar fila cuyo enlace/id de la col 12 coincide
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(tr => {
+        // La primera columna visible suele ser el código petición (col 12)
+        const firstCell = tr.querySelector('td a, td');
+        if (!firstCell) return;
+        const text = firstCell.textContent?.trim();
+        if (text === last) {
+            tr.classList.add('row-last-read');
+        }
+    });
+}
+
+function scrollToLastRead() {
+    const table = document.getElementById('results__table');
+    const last = getLastRead();
+    if (!table || !last) return;
+    const tr = Array.from(table.querySelectorAll('tbody tr')).find(tr => {
+        const firstCell = tr.querySelector('td a, td');
+        return firstCell && firstCell.textContent?.trim() === last;
+    });
+    if (tr) {
+        tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        tr.classList.add('row-last-read');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateLastReadUI();
+    const btnClear = document.getElementById('clearLastRead');
+    const btnScroll = document.getElementById('scrollLastRead');
+    if (btnClear) btnClear.addEventListener('click', clearLastRead);
+    if (btnScroll) btnScroll.addEventListener('click', scrollToLastRead);
+});
+
 /**
  * Convierte una cadena de fecha en formato 'DD/MM/YYYY HH:MM:SS' a un objeto Date.
  * @param {string} dateString - La cadena de fecha en formato 'DD/MM/YYYY HH:MM:SS'.
@@ -293,7 +371,10 @@ function showCriticidadChangesTable(changes, date1List, date2List) {
 
     table.appendChild(body);
     resultContainer.appendChild(table);
-    resultContainer.style.display = 'block'; // Mostrar tabla
+    resultContainer.style.display = 'block';
+    // Actualizar indicador y resaltar última leída
+    updateLastReadUI();
+    highlightLastReadInTable(); // Mostrar tabla
     clearButton.style.display = 'block'; // Mostrar botón limpiar
 }
 
@@ -475,6 +556,12 @@ function createTable(data) {
                 link.setAttribute('title', row[16]); // Que salga la descripción cuando pasas el ratón por encima
                 link.textContent = row[colIndex];
                 link.target = '_blank';
+                // Al hacer click, guarda como última incidencia leída
+                link.addEventListener('click', (e) => {
+                    // Esperamos el valor actual de row[12]
+                    const id = link.textContent?.trim();
+                    if (id) setLastRead(id);
+                });
                 td.appendChild(link);
             } else {
                 td.textContent = row[colIndex] || '';
@@ -511,6 +598,9 @@ function createTable(data) {
     resultContainer.appendChild(excelButton);
     resultContainer.appendChild(table);
     resultContainer.style.display = 'block';
+    // Actualizar indicador y resaltar última leída
+    updateLastReadUI();
+    highlightLastReadInTable();
 }
 
 /**
