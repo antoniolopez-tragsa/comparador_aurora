@@ -620,3 +620,14 @@ input[type="file"].form__input {
         flex: 1 1 calc(50% - var(--spacing-small));
     }
 }
+
+/* 8) Añadido botón de Abrir en AURORA */
+.last-read-indicator .btn.btn-primary {
+    background: linear-gradient(180deg, var(--color-primary), var(--color-primary-dark));
+    color: #fff;
+}
+
+.last-read-indicator .btn.btn-primary:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}

@@ -40,20 +40,20 @@
   const $$ = (sel, scope = document) => Array.from(scope.querySelectorAll(sel));
 
   function show(el, display = "block") {
-  if (!el) return;
-  el.style.display = display;               // fuerza block, vence el CSS
-  if (el.classList.contains("results")) {
-    el.classList.add("results--visible");
+    if (!el) return;
+    el.style.display = display;               // fuerza block, vence el CSS
+    if (el.classList.contains("results")) {
+      el.classList.add("results--visible");
+    }
   }
-}
 
-function hide(el) {
-  if (!el) return;
-  el.style.display = "none";
-  if (el.classList.contains("results")) {
-    el.classList.remove("results--visible");
+  function hide(el) {
+    if (!el) return;
+    el.style.display = "none";
+    if (el.classList.contains("results")) {
+      el.classList.remove("results--visible");
+    }
   }
-}
 
   function setText(el, text) {
     if (el) el.textContent = text;
@@ -81,13 +81,13 @@ function hide(el) {
     set(id) {
       try {
         localStorage.setItem(STORAGE.LAST_READ_KEY, id);
-      } catch {}
+      } catch { }
       this.updateUI();
     },
     clear() {
       try {
         localStorage.removeItem(STORAGE.LAST_READ_KEY);
-      } catch {}
+      } catch { }
       this.updateUI();
       const table = $(SELECTORS.resultsTable);
       if (table) $$(".row-last-read", table).forEach((tr) => tr.classList.remove("row-last-read"));
@@ -317,11 +317,11 @@ function hide(el) {
   }
 
   function enableFilters() {
-  const fs = document.querySelector("#filterOptions");
-  if (!fs) return;
-  fs.disabled = false;
-  show(fs); // ahora sí lo muestra
-}
+    const fs = document.querySelector("#filterOptions");
+    if (!fs) return;
+    fs.disabled = false;
+    show(fs); // ahora sí lo muestra
+  }
 
   function disableFilters() {
     const fs = $(SELECTORS.filtersFieldset);
@@ -334,18 +334,18 @@ function hide(el) {
      Lectura y pintado
   ============================== */
   function scrollToFilters() {
-  const fs = document.querySelector('#filterOptions');
-  if (!fs) return;
+    const fs = document.querySelector('#filterOptions');
+    if (!fs) return;
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const offset = 12; // separa un poco del borde superior
-  const y = fs.getBoundingClientRect().top + window.pageYOffset - offset;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const offset = 12; // separa un poco del borde superior
+    const y = fs.getBoundingClientRect().top + window.pageYOffset - offset;
 
-  window.scrollTo({
-    top: y,
-    behavior: prefersReduced ? 'auto' : 'smooth'
-  });
-}
+    window.scrollTo({
+      top: y,
+      behavior: prefersReduced ? 'auto' : 'smooth'
+    });
+  }
 
   function handleDataAndRender(allRows) {
     enableFilters();
@@ -356,10 +356,10 @@ function hide(el) {
     // Primera pintada (sin filtros)
     renderTable(allRows);
 
-// Espera un frame para asegurar layout, y scroll suave a filtros
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => scrollToFilters());
-  });
+    // Espera un frame para asegurar layout, y scroll suave a filtros
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => scrollToFilters());
+    });
 
     // Delegación de eventos para los filtros
     const filterRoot = $(SELECTORS.filterOptions);
@@ -377,8 +377,8 @@ function hide(el) {
     const filtered = applyFilters(data);
     buildTable(filtered);
   }
-  
-  
+
+
 
   /* =============================
      Exportar a Excel
@@ -420,9 +420,19 @@ function hide(el) {
 
     const btnClearLast = $(SELECTORS.btnClearLastRead);
     const btnScrollLast = $(SELECTORS.btnScrollLastRead);
+    const btnOpenAurora = document.getElementById('openAurora');
 
     btnClearLast && btnClearLast.addEventListener("click", () => LastRead.clear());
     btnScrollLast && btnScrollLast.addEventListener("click", () => LastRead.scrollTo());
+    btnOpenAurora?.addEventListener('click', () => {
+      const id = LastRead.get();
+      if (id) {
+        const url = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${encodeURIComponent(id)}`;
+        window.open(url, '_blank');
+      } else {
+        alert('No hay ninguna incidencia guardada.');
+      }
+    });
 
     // Form submit: leer 1 archivo
     const form = $(SELECTORS.form);
