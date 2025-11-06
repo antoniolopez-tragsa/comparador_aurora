@@ -1,72 +1,64 @@
-# Comparador de Listados de Incidencias en AURORA
-
-Este proyecto es una aplicación web estática que permite comparar listados de incidencias en el sistema AURORA. Ofrece funcionalidades para cargar y visualizar archivos de Excel, aplicar filtros específicos y comparar datos entre diferentes listados para identificar cambios críticos.
+# Visor de Listados de Incidencias en AURORA
+Este proyecto es una aplicación web estática que permite visualizar listados de incidencias en el sistema AURORA. Ofrece funcionalidades para cargar y analizar archivos de Excel, aplicar filtros específicos y resaltar información relevante de las incidencias.
 
 ## Características Principales
+* **Carga de Archivos Excel**:
+  * Soporte para la carga de un único archivo `.xls`.
+  * Procesamiento automático de las hojas relevantes dentro del archivo.
 
-- **Carga de Archivos Excel**:
-  - Soporte para la carga de uno o dos archivos `.xls`.
-  - Procesamiento de múltiples hojas dentro de los archivos.
-- **Visualización de Datos**:
-  - Muestra los datos relevantes del archivo seleccionado en una tabla interactiva.
-  - Las filas incluyen enlaces clicables para acceder a más detalles.
-- **Filtros Dinámicos**:
-  - Filtro de reclamaciones.
-  - Filtro de solicitudes susceptibles de auditoría.
-- **Comparación de Archivos**:
-  - Identifica cambios en la criticidad de las incidencias entre dos listados.
-  - Resalta las diferencias encontradas para una fácil identificación.
-- **Exportación a Excel**:
-  - Permite exportar los resultados de la comparación a un archivo Excel para su análisis posterior.
+* **Visualización de Datos**:
+  * Muestra los datos del archivo en una tabla interactiva.
+  * Las filas incluyen enlaces clicables para acceder a más detalles.
+
+* **Filtros Dinámicos**:
+  * Filtro de reclamaciones.
+  * Filtro de solicitudes susceptibles de auditoría.
+  * Filtro de incidencias que hayan estado en espera.
+
+* **Exportación a Excel**:
+  * Permite exportar los resultados visualizados a un archivo Excel para su análisis posterior.
+
+* **Última Incidencia Leída**:
+  * Guarda en el navegador la última incidencia seleccionada mediante `localStorage`.
+  * Muestra un indicador visual con botones para **Ir a la fila** y **Borrar la marca**.
+  * Resalta automáticamente la fila guardada al recargar la página.
 
 ## Estructura del Proyecto
-
-- `index.html`: Página principal que contiene la estructura básica de la aplicación.
-- `css/`: Carpeta que contiene los archivos de estilos CSS para el diseño de la aplicación.
-- `js/`: Carpeta que incluye los scripts JavaScript necesarios para la funcionalidad de la aplicación.
-- `img/`: Directorio destinado a las imágenes utilizadas en la interfaz de usuario.
+* `index.html`: Página principal que contiene la estructura básica de la aplicación.
+* `css/`: Carpeta con los archivos de estilos CSS para el diseño de la interfaz.
+* `js/`: Carpeta con los scripts JavaScript que implementan la funcionalidad.
+* `img/`: Directorio con las imágenes utilizadas en la interfaz de usuario.
 
 ## Tecnologías Utilizadas
-
-- **HTML5**: Para la estructura de la página web.
-- **CSS3**: Para el diseño y la presentación visual.
-- **JavaScript**: Para la interactividad y la manipulación de datos.
-- **Bibliotecas Externas**:
-  - [SheetJS](https://sheetjs.com/): Para la manipulación y lectura de archivos Excel en el navegador.
+* **HTML5**: Estructura de la aplicación.
+* **CSS3**: Diseño y presentación visual.
+* **JavaScript**: Interactividad y manipulación de datos.
+* **Biblioteca Externa**:
+  * [SheetJS](https://sheetjs.com/): Para la lectura y tratamiento de archivos Excel en el navegador.
 
 ## Instrucciones de Uso
+1. **Carga del Archivo**
+   * Abre la aplicación en tu navegador web.
+   * Usa el botón “Seleccionar archivo” para cargar un archivo `.xls` desde tu sistema local.
 
-1. **Carga de Archivos**:
-   - Abre la aplicación en tu navegador web.
-   - Utiliza el botón "Seleccionar archivo" para cargar uno o dos archivos `.xls` desde tu sistema local.
-2. **Visualización y Filtrado**:
-   - Una vez cargados los archivos, los datos se mostrarán en una tabla interactiva.
-   - Aplica los filtros disponibles para refinar la visualización según tus necesidades.
-3. **Comparación de Listados**:
-   - Si has cargado dos archivos, la aplicación comparará automáticamente las incidencias entre ambos.
-   - Las diferencias en la criticidad se resaltarán para facilitar su identificación.
-4. **Exportación de Resultados**:
-   - Después de la comparación, puedes exportar los resultados a un archivo Excel para guardarlos o analizarlos posteriormente.
+2. **Visualización y Filtrado**
+   * Una vez cargado, los datos se mostrarán en una tabla interactiva.
+   * Activa o desactiva los filtros disponibles según tus necesidades.
+
+3. **Gestión de la Última Incidencia Leída**
+   * Al hacer clic en una incidencia (columna *Código petición*), se guarda automáticamente como la última leída.
+   * Puedes usar los botones del indicador para volver a esa fila o eliminar la marca.
+
+4. **Exportación de Resultados**
+   * Utiliza el botón de exportar para guardar la tabla en formato Excel.
 
 ## Consideraciones
-
-- Asegúrate de que los archivos `.xls` que deseas comparar tengan un formato coherente y que las hojas correspondientes contengan las columnas necesarias para una comparación efectiva.
-- La aplicación está diseñada para funcionar completamente en el lado del cliente, por lo que no se requiere una configuración de servidor.
+* Asegúrate de que el archivo `.xls` tenga el formato esperado (columnas y hojas utilizadas por el sistema AURORA).
+* La aplicación se ejecuta completamente en el navegador, sin necesidad de servidor.
 
 ## Licencia
-
-Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más información.
 
 ## Contacto
-
-Para más información o consultas, puedes visitar el repositorio en GitHub: [https://github.com/antoniolopez-tragsa/comparador_aurora](https://github.com/antoniolopez-tragsa/comparador_aurora)
-
-
-## Nueva Funcionalidad: Última Incidencia Leída
-
-- **Persistencia en LocalStorage**: al hacer clic en una incidencia (columna Código petición, `row[12]`), la aplicación guarda ese código como la última leída en el navegador.
-- **Indicador visual**: aparece un recuadro encima de la tabla que muestra la última incidencia seleccionada, con dos botones:
-  - **Ir a fila**: desplaza y resalta la fila correspondiente en la tabla.
-  - **Borrar**: elimina la marca y oculta el indicador.
-- **Resaltado en tabla**: la fila guardada se resalta automáticamente al cargar o refrescar los datos.
-- **Estilos mejorados**: integración visual con los colores principales de la aplicación, con fondo suave, sombra ligera y gradientes para el resaltado.
+Para más información o consultas, visita el repositorio en GitHub:
+[https://github.com/antoniolopez-tragsa/comparador_aurora](https://github.com/antoniolopez-tragsa/comparador_aurora)
