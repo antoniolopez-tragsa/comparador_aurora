@@ -131,7 +131,6 @@ function hideFilterOptions() {
 
 /**
  * Limpia la tabla de resultados, oculta filtros, resetea los archivos seleccionados
- * y oculta el botón de comparar.
  */
 document.getElementById('clearButton').addEventListener('click', function () {
     // Ocultar contenedor de resultados y filtros
@@ -141,11 +140,6 @@ document.getElementById('clearButton').addEventListener('click', function () {
     // Limpiar campos de archivos
     document.getElementById('file1').value = '';
     document.getElementById('file2').value = '';
-
-    // Ocultar y deshabilitar el botón Comparar
-    const compareButton = document.getElementById('compareButton');
-    compareButton.style.display = 'none';
-    compareButton.disabled = true;
 });
 
 /**
@@ -407,21 +401,6 @@ function enableFieldset() {
     document.getElementById('filterOptions').disabled = false;
     document.getElementById('filterOptions').style.display = 'block'; // Mostrar el fieldset
 }
-
-/**
- * Comparar archivos.
- */
-document.getElementById('compareButton').addEventListener('click', function () {
-    const file1 = document.getElementById('file1').files[0];
-    const file2 = document.getElementById('file2').files[0];
-
-    if (!file1 || !file2) {
-        alert('Selecciona dos archivos para comparar.');
-        return;
-    }
-
-    disableFieldset(); // Deshabilitar fieldset al comparar
-});
 
 // Añade un evento al botón de exportar para generar y descargar un archivo Excel
 document.addEventListener('click', function (e) {
