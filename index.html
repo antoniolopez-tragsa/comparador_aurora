@@ -6,17 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
 
-    <title>Comparador de listados de incidencias en AURORA</title>
+    <title>Visor de listados de incidencias en AURORA</title>
 
     <!-- Estilos -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+
+    <!-- JavaScript -->
+    <script src="js/script.js" charset="UTF-8" defer></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
 </head>
 
 <body class="page">
     <!-- Encabezado -->
     <header class="header">
-        <h1 class="header__title">Comparador de listados de incidencias en AURORA</h1>
+        <h1 class="header__title">Visor de listados de incidencias en AURORA</h1>
     </header>
 
     <!-- Formulario -->
@@ -25,17 +29,12 @@
             <fieldset class="form__fieldset">
                 <legend id="formTitle" class="form__legend">Cargar archivos</legend>
 
-                <label for="file1" class="form__label">Seleccione el primer archivo:</label>
+                <label for="file1" class="form__label">Seleccione el archivo:</label>
                 <input type="file" id="file1" name="file1" class="form__input" accept=".xls" required>
-
-                <label for="file2" class="form__label">Seleccione el segundo archivo (opcional):</label>
-                <input type="file" id="file2" name="file2" class="form__input" accept=".xls">
             </fieldset>
 
             <!-- Botonera -->
             <button type="submit" class="form__button" aria-label="Visualizar Archivos">Visualizar</button>
-            <button type="button" id="compareButton" class="form__button" style="display:none;"
-                disabled>Comparar</button>
             <button type="button" id="clearButton" class="form__button">Limpiar</button>
 
             <!-- Mensajes de error -->
@@ -67,13 +66,15 @@
             </fieldset>
         </form>
 
-        
+
         <!-- Indicador de última incidencia leída -->
         <section id="lastReadIndicator" class="last-read-indicator" hidden>
             <span>Última incidencia leída:</span>
             <strong id="lastReadValue">—</strong>
-            <button type="button" id="scrollLastRead" class="btn btn-small" aria-label="Ir a la última fila leída">Ir a fila</button>
-            <button type="button" id="clearLastRead" class="btn btn-small btn-secondary" aria-label="Borrar marca">Borrar</button>
+            <button type="button" id="scrollLastRead" class="btn btn-small" aria-label="Ir a la última fila leída">Ir a
+                fila</button>
+            <button type="button" id="clearLastRead" class="btn btn-small btn-secondary"
+                aria-label="Borrar marca">Borrar</button>
         </section>
 
         <!-- Contenedor de resultados -->
@@ -93,10 +94,6 @@
             </a>
         </p>
     </footer>
-
-    <!-- JavaScript -->
-    <script src="js/script.js" charset="UTF-8"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </body>
 
 </html>
