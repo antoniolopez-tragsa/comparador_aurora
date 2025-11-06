@@ -110,9 +110,6 @@ document.getElementById('fileForm').addEventListener('submit', function (event) 
     reader1.readAsArrayBuffer(file1);
 });
 
-// Vincular la función `checkFiles` a los eventos de cambio en los campos de archivo
-document.getElementById('file1').addEventListener('change', checkFiles);
-
 /**
  * Oculta el contenedor de resultados de manera inmediata.
  */
@@ -162,7 +159,7 @@ function showError(message) {
  */
 function enableFiltersAndShowTable(data) {
     enableFieldset(); // Habilitar fieldset
-    const filters = ['showClaims', 'showAudits', 'showPending'];
+    const filters = ['showClaims', 'showAudits', 'showPending', 'showAlerts'];
 
     filters.forEach(id => {
         const checkbox = document.getElementById(id);
@@ -185,6 +182,7 @@ function filterTable(data) {
     const showClaims = document.getElementById('showClaims').checked;
     const showAudits = document.getElementById('showAudits').checked;
     const showPending = document.getElementById('showPending').checked;
+	const showAlerts = document.getElementById('showAlerts').checked;
 
     let filteredData = new Set(); // Usamos un Set para evitar duplicados
 
@@ -222,9 +220,20 @@ function filterTable(data) {
             }
         });
     }
+	
+	if (showAlerts) {
+		data.slice(1).forEach(row => {
+			const criticidadGestion = (row[14] || '').toLowerCase();
+			const criticidadSolicitante = (row[15] || '').toLowerCase();
+
+			if (criticidadGestion.includes('urgencia') || criticidadGestion.includes('emergencia') || criticidadSolicitante.includes('urgencia') || criticidadSolicitante.includes('emergencia')) {
+				filteredData.add(row);
+			}
+		});
+	}
 
     // Si no hay filtros aplicados, mostrar todos los datos.
-    if (!showClaims && !showAudits && !showPending) {
+    if (!showClaims && !showAudits && !showPending && !showAlerts) {
         filteredData = new Set(data.slice(1)); // Todos los datos sin filtros
     }
 
@@ -272,21 +281,13 @@ function createTable(data) {
     const header = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    const columnsToShow = [12, 0, 4, 1, 5, 48, 11, 14];
-    const timeColumns = [0, 4, 1, 5, 48];
+    const columnsToShow = [12, 19, 0, 4, 1, 5, 48, 11, 14, 15];
 
     columnsToShow.forEach((colIndex) => {
         const th = document.createElement('th');
         th.textContent = data[0][colIndex] || `Columna ${colIndex + 1}`;
         th.setAttribute('scope', 'col');
         headerRow.appendChild(th);
-
-        if (timeColumns.includes(colIndex)) {
-            const thSeconds = document.createElement('th');
-            thSeconds.textContent = `${data[0][colIndex]} (Segundos)`;
-            thSeconds.setAttribute('scope', 'col');
-            headerRow.appendChild(thSeconds);
-        }
     });
 
     header.appendChild(headerRow);
@@ -336,12 +337,6 @@ function createTable(data) {
             }
 
             tr.appendChild(td);
-
-            if (timeColumns.includes(colIndex)) {
-                const tdSeconds = document.createElement('td');
-                tdSeconds.textContent = convertToSeconds(row[colIndex]);
-                tr.appendChild(tdSeconds);
-            }
         });
 
         fragment.appendChild(tr);

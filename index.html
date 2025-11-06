@@ -11,7 +11,7 @@
     <!-- Estilos -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
-
+	
     <!-- JavaScript -->
     <script src="js/script.js" charset="UTF-8" defer></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
@@ -56,6 +56,10 @@
                     <input type="checkbox" id="showPending" class="filter-checkbox">
                     Mostrar incidencias que hayan estado en espera
                 </label>
+				<label class="filter__label">
+                    <input type="checkbox" id="showAlerts" class="filter-checkbox">
+                    Mostrar urgencias o emergencias
+                </label>
             </fieldset>
 
             <!-- Leyenda -->
@@ -66,18 +70,18 @@
             </fieldset>
         </form>
 
+        
         <!-- Indicador de última incidencia leída -->
         <section id="lastReadIndicator" class="last-read-indicator" hidden>
             <span>Última incidencia leída:</span>
             <strong id="lastReadValue">—</strong>
-            <button type="button" id="scrollLastRead" class="btn btn-small" aria-label="Ir a la última fila leída">Ir a
-                fila</button>
-            <button type="button" id="clearLastRead" class="btn btn-small btn-secondary"
-                aria-label="Borrar marca">Borrar</button>
+            <button type="button" id="scrollLastRead" class="btn btn-small" aria-label="Ir a la última fila leída">Ir a fila</button>
+            <button type="button" id="clearLastRead" class="btn btn-small btn-secondary" aria-label="Borrar marca">Borrar</button>
         </section>
 
         <!-- Contenedor de resultados -->
         <div id="resultContainer" class="results" aria-live="polite"></div>
+
     </main>
 
     <!-- Pie -->
