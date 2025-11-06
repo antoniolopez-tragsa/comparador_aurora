@@ -1,445 +1,481 @@
-// === Persistencia de última incidencia leída (columna row[12]) ===
-const LAST_READ_KEY = 'ultimaIncidenciaAurora';
+/* =========================================================
+   AURORA – script refactorizado
+   - Módulo IIFE para evitar globales
+   - Delegación de eventos para filtros
+   - Lectura XLSX coherente con ArrayBuffer
+   - UI helpers unificados
+   - Export a Excel robusto
+   ========================================================= */
+(() => {
+  "use strict";
 
-function getLastRead() {
-    try { return localStorage.getItem(LAST_READ_KEY) || null; } catch { return null; }
+  /* =============================
+     Constantes / Selectores
+  ============================== */
+  const SELECTORS = {
+    form: "#fileForm",
+    file1: "#file1",
+    clearBtn: "#clearButton",
+    errorMsg: "#errorMessage",
+    resultsContainer: "#resultContainer",
+    resultsTable: "#results__table",
+    filtersFieldset: "#filterOptions",
+    filterOptions: "#filterOptions",
+    lastReadIndicator: "#lastReadIndicator",
+    lastReadValue: "#lastReadValue",
+    btnScrollLastRead: "#scrollLastRead",
+    btnClearLastRead: "#clearLastRead",
+  };
+
+  const COLUMNS_TO_SHOW = [12, 19, 0, 4, 1, 5, 48, 11, 14, 15]; // orden de columnas en la tabla
+
+  const STORAGE = {
+    LAST_READ_KEY: "ultimaIncidenciaAurora",
+  };
+
+  /* =============================
+     Utilidades generales de UI
+  ============================== */
+  const $ = (sel, scope = document) => scope.querySelector(sel);
+  const $$ = (sel, scope = document) => Array.from(scope.querySelectorAll(sel));
+
+  function show(el, display = "block") {
+  if (!el) return;
+  el.style.display = display;               // fuerza block, vence el CSS
+  if (el.classList.contains("results")) {
+    el.classList.add("results--visible");
+  }
 }
 
-function setLastRead(id) {
-    try { localStorage.setItem(LAST_READ_KEY, id); } catch { }
-    updateLastReadUI();
+function hide(el) {
+  if (!el) return;
+  el.style.display = "none";
+  if (el.classList.contains("results")) {
+    el.classList.remove("results--visible");
+  }
 }
 
-function clearLastRead() {
-    try { localStorage.removeItem(LAST_READ_KEY); } catch { }
-    updateLastReadUI();
-    const table = document.getElementById('results__table');
-    if (table) table.querySelectorAll('tr.row-last-read').forEach(tr => tr.classList.remove('row-last-read'));
-}
+  function setText(el, text) {
+    if (el) el.textContent = text;
+  }
 
-function updateLastReadUI() {
-    const indicator = document.getElementById('lastReadIndicator');
-    const valueEl = document.getElementById('lastReadValue');
-    const last = getLastRead();
-    if (!indicator || !valueEl) return;
-    if (last) { indicator.hidden = false; valueEl.textContent = last; }
-    else { indicator.hidden = true; valueEl.textContent = '—'; }
-}
+  function showError(message) {
+    const box = $(SELECTORS.errorMsg);
+    if (!box) return;
+    box.textContent = message;
+    box.style.display = "block";
+    window.setTimeout(() => (box.style.display = "none"), 5000);
+  }
 
-function highlightLastReadInTable() {
-    const last = getLastRead();
-    const table = document.getElementById('results__table');
-    if (!table || !last) return;
-    table.querySelectorAll('tr.row-last-read').forEach(tr => tr.classList.remove('row-last-read'));
-    const rows = table.querySelectorAll('tbody tr');
-    rows.forEach(tr => {
-        const firstCell = tr.querySelector('td a, td');
-        if (firstCell && firstCell.textContent?.trim() === last) tr.classList.add('row-last-read');
-    });
-}
-
-function scrollToLastRead() {
-    const table = document.getElementById('results__table');
-    const last = getLastRead();
-    if (!table || !last) return;
-    const tr = Array.from(table.querySelectorAll('tbody tr')).find(tr => {
-        const firstCell = tr.querySelector('td a, td');
+  /* =============================
+     Persistencia: última leída
+  ============================== */
+  const LastRead = {
+    get() {
+      try {
+        return localStorage.getItem(STORAGE.LAST_READ_KEY) || null;
+      } catch {
+        return null;
+      }
+    },
+    set(id) {
+      try {
+        localStorage.setItem(STORAGE.LAST_READ_KEY, id);
+      } catch {}
+      this.updateUI();
+    },
+    clear() {
+      try {
+        localStorage.removeItem(STORAGE.LAST_READ_KEY);
+      } catch {}
+      this.updateUI();
+      const table = $(SELECTORS.resultsTable);
+      if (table) $$(".row-last-read", table).forEach((tr) => tr.classList.remove("row-last-read"));
+    },
+    updateUI() {
+      const indicator = $(SELECTORS.lastReadIndicator);
+      const valueEl = $(SELECTORS.lastReadValue);
+      const last = this.get();
+      if (!indicator || !valueEl) return;
+      if (last) {
+        indicator.hidden = false;
+        setText(valueEl, last);
+      } else {
+        indicator.hidden = true;
+        setText(valueEl, "—");
+      }
+    },
+    highlightInTable() {
+      const last = this.get();
+      const table = $(SELECTORS.resultsTable);
+      if (!table || !last) return;
+      $$(".row-last-read", table).forEach((tr) => tr.classList.remove("row-last-read"));
+      $$(".results__table tbody tr", table.parentElement || document).forEach((tr) => {
+        const firstCell = tr.querySelector("td a, td");
+        if (firstCell && firstCell.textContent?.trim() === last) tr.classList.add("row-last-read");
+      });
+    },
+    scrollTo() {
+      const table = $(SELECTORS.resultsTable);
+      const last = this.get();
+      if (!table || !last) return;
+      const tr = $$(".results__table tbody tr", table.parentElement || document).find((r) => {
+        const firstCell = r.querySelector("td a, td");
         return firstCell && firstCell.textContent?.trim() === last;
+      });
+      if (tr) {
+        tr.scrollIntoView({ behavior: "smooth", block: "center" });
+        tr.classList.add("row-last-read");
+      }
+    },
+  };
+
+  /* =============================
+     Helpers de datos
+  ============================== */
+  /**
+   * Convierte 'DD/MM/YYYY HH:MM:SS' en Date | null
+   */
+  function parseDate(dateString) {
+    if (!dateString) return null;
+    const [datePart, timePart] = String(dateString).split(" ");
+    if (!datePart || !timePart) return null;
+    const [day, month, year] = datePart.split("/").map(Number);
+    const [hours, minutes, seconds] = timePart.split(":").map(Number);
+    return new Date(year, (month || 1) - 1, day || 1, hours || 0, minutes || 0, seconds || 0);
+  }
+
+  /**
+   * 'Xh Ym Zs' -> seconds
+   */
+  function convertToSeconds(timeString) {
+    if (!timeString || typeof timeString !== "string") return 0;
+    const m = timeString.match(/(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/);
+    if (!m) return 0;
+    const [, h = 0, mnt = 0, s = 0] = m.map((v) => (v ? Number(v) : 0));
+    return h * 3600 + mnt * 60 + s;
+  }
+
+  function getCategoryByFirstChar(char) {
+    switch (char) {
+      case "I":
+        return "Incidencia";
+      case "S":
+        return "Solicitud";
+      case "R":
+        return "Reclamación";
+      case "A":
+        return "Agradecimiento / Sugerencia";
+      case "P":
+        return "Petición";
+      case "V":
+        return "Inspección visual";
+      default:
+        return char;
+    }
+  }
+
+  /* =============================
+     Construcción de tabla
+  ============================== */
+  function buildTable(data) {
+    const container = $(SELECTORS.resultsContainer);
+    if (!container) return;
+
+    container.innerHTML = ""; // limpiar
+    const table = document.createElement("table");
+    table.className = "results__table";
+    table.id = "results__table";
+    table.setAttribute("role", "table");
+
+    // thead
+    const thead = document.createElement("thead");
+    const trh = document.createElement("tr");
+    COLUMNS_TO_SHOW.forEach((colIndex) => {
+      const th = document.createElement("th");
+      th.textContent = data[0][colIndex] || `Columna ${colIndex + 1}`;
+      th.scope = "col";
+      trh.appendChild(th);
     });
-    if (tr) { tr.scrollIntoView({ behavior: 'smooth', block: 'center' }); tr.classList.add('row-last-read'); }
-}
+    thead.appendChild(trh);
+    table.appendChild(thead);
 
-document.addEventListener('DOMContentLoaded', () => {
-    updateLastReadUI();
-    const btnClear = document.getElementById('clearLastRead');
-    const btnScroll = document.getElementById('scrollLastRead');
-    if (btnClear) btnClear.addEventListener('click', clearLastRead);
-    if (btnScroll) btnScroll.addEventListener('click', scrollToLastRead);
-});
-/**
- * Convierte una cadena de fecha en formato 'DD/MM/YYYY HH:MM:SS' a un objeto Date.
- * @param {string} dateString - La cadena de fecha en formato 'DD/MM/YYYY HH:MM:SS'.
- * @returns {Date|null} - Un objeto Date correspondiente a la cadena o null si el formato es inválido.
- */
-function parseDate(dateString) {
-    if (!dateString) return null; // Retornar null si no hay cadena
-    const [datePart, timePart] = dateString.split(' '); // Dividir en fecha y hora
-    const [day, month, year] = datePart.split('/').map(Number); // Obtener día, mes, año
-    const [hours, minutes, seconds] = timePart.split(':').map(Number); // Obtener horas, minutos, segundos
-    return new Date(year, month - 1, day, hours, minutes, seconds); // Crear objeto Date
-}
+    // tbody
+    const tbody = document.createElement("tbody");
+    const frag = document.createDocumentFragment();
 
-/**
- * Event listener para manejar el envío del formulario.
- * Lee los archivos seleccionados, procesa sus hojas y muestra los datos.
- */
-document.getElementById('fileForm').addEventListener('submit', function (event) {
-    event.preventDefault(); // Evitar recarga de página
+    const sorted = data.slice(1).sort((a, b) => (parseFloat(b[12]) || 0) - (parseFloat(a[12]) || 0));
+    sorted.forEach((row) => {
+      const tr = document.createElement("tr");
 
-    const fileInput1 = document.getElementById('file1');
-    const file1 = fileInput1.files[0]; // Primer archivo seleccionado
+      if (row[13] === "Finalizada") tr.classList.add("italic");
+      if (row[3] && !String(row[3]).includes("HUMV")) tr.classList.add("bold");
 
-    if (!file1) {
-        showError('Por favor, selecciona un archivo.'); // Mostrar error si no hay primer archivo
-        return;
+      COLUMNS_TO_SHOW.forEach((colIndex) => {
+        const td = document.createElement("td");
+
+        if (colIndex === 11) {
+          td.textContent = getCategoryByFirstChar(row[colIndex]) || "";
+        } else if (colIndex === 12) {
+          const link = document.createElement("a");
+          link.href = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${row[colIndex]}`;
+          link.title = row[16] || "";
+          link.textContent = row[colIndex] ?? "";
+          link.target = "_blank";
+
+          // guardar última leída en distintos patrones de click
+          const saveLast = () => {
+            const id = link.textContent?.trim();
+            if (id) LastRead.set(id);
+          };
+          link.addEventListener("click", saveLast);
+          link.addEventListener("auxclick", (e) => e.button === 1 && saveLast());
+          link.addEventListener("mouseup", (e) => (e.button === 1 || e.button === 2) && saveLast());
+          link.addEventListener("contextmenu", saveLast);
+
+          td.appendChild(link);
+        } else {
+          td.textContent = row[colIndex] ?? "";
+        }
+
+        tr.appendChild(td);
+      });
+
+      frag.appendChild(tr);
+    });
+
+    tbody.appendChild(frag);
+    table.appendChild(tbody);
+
+    // Botón exportar
+    const btn = document.createElement("button");
+    btn.id = "exportarExcel";
+    btn.type = "button";
+    btn.innerHTML = `Exportar a <img id="imagen-excel" src="img/excel.png" alt="Excel" />`;
+
+    container.appendChild(btn);
+    container.appendChild(table);
+
+    show(container);
+    LastRead.updateUI();
+    LastRead.highlightInTable();
+  }
+
+  /* =============================
+     Filtros
+  ============================== */
+  function applyFilters(data) {
+    const showClaims = $("#showClaims")?.checked;
+    const showAudits = $("#showAudits")?.checked;
+    const showPending = $("#showPending")?.checked;
+    const showAlerts = $("#showAlerts")?.checked;
+
+    // Si no hay filtros, devolvemos todo (excepto cabecera)
+    if (!showClaims && !showAudits && !showPending && !showAlerts) {
+      return [data[0], ...data.slice(1)];
     }
 
-    const reader1 = new FileReader();
-
-    // Procesar el primer archivo
-    reader1.onload = function (e) {
-        try {
-            const data1 = e.target.result;
-            const workbook1 = XLSX.read(data1, { type: 'binary' });
-            const sheet2_1 = workbook1.Sheets[workbook1.SheetNames[1]]; // Segunda hoja del primer archivo
-            date1 = sheet2_1 && sheet2_1['B22'] ? parseDate(sheet2_1['B22'].v) : null; // Leer fecha
-            const rows1 = XLSX.utils.sheet_to_json(workbook1.Sheets[workbook1.SheetNames[0]], { header: 1, defval: '' });
-
-            if (rows1.length === 0) {
-                showError('El primer archivo está vacío o no contiene datos legibles.');
-                return;
-            }
-
-            enableFiltersAndShowTable(rows1); // Solo un archivo seleccionado
-        } catch (err) {
-            console.error(err);
-            showError('Ocurrió un error al procesar el archivo.');
-        }
-    };
-
-    reader1.readAsArrayBuffer(file1);
-});
-
-/**
- * Oculta el contenedor de resultados de manera inmediata.
- */
-function hideResultContainer() {
-    const resultContainer = document.getElementById('resultContainer');
-    resultContainer.style.display = 'none'; // Ocultar inmediatamente
-}
-
-/**
- * Oculta el fieldset de filtros de manera inmediata.
- */
-function hideFilterOptions() {
-    const filterOptions = document.getElementById('filterOptions');
-    filterOptions.style.display = 'none'; // Ocultar inmediatamente
-}
-
-/**
- * Limpia la tabla de resultados, oculta filtros, resetea los archivos seleccionados
- */
-document.getElementById('clearButton').addEventListener('click', function () {
-    // Ocultar contenedor de resultados y filtros
-    hideResultContainer();
-    hideFilterOptions();
-
-    // Limpiar campos de archivos
-    document.getElementById('file1').value = '';
-    document.getElementById('file2').value = '';
-});
-
-/**
- * Muestra un mensaje de error en el contenedor designado.
- * @param {string} message - Mensaje de error a mostrar.
- */
-function showError(message) {
-    const errorMessage = document.getElementById('errorMessage');
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-
-    setTimeout(() => {
-        errorMessage.style.display = 'none';
-    }, 5000); // Ocultar después de 5 segundos
-}
-
-/**
- * Muestra los datos y habilita el fieldset.
- * @param {Array} data - Datos a mostrar.
- */
-function enableFiltersAndShowTable(data) {
-    enableFieldset(); // Habilitar fieldset
-    const filters = ['showClaims', 'showAudits', 'showPending', 'showAlerts'];
-
-    filters.forEach(id => {
-        const checkbox = document.getElementById(id);
-        checkbox.checked = false;
-
-        // Reemplaza los event listeners para evitar duplicados
-        checkbox.replaceWith(checkbox.cloneNode(true));
-        const newCheckbox = document.getElementById(id);
-        newCheckbox.addEventListener('change', () => filterTable(data));
-    });
-
-    document.getElementById('filterOptions').style.display = 'block';
-    document.getElementById('clearButton').style.display = 'block';
-
-    filterTable(data);
-}
-
-// Función para filtrar la tabla
-function filterTable(data) {
-    const showClaims = document.getElementById('showClaims').checked;
-    const showAudits = document.getElementById('showAudits').checked;
-    const showPending = document.getElementById('showPending').checked;
-	const showAlerts = document.getElementById('showAlerts').checked;
-
-    let filteredData = new Set(); // Usamos un Set para evitar duplicados
+    const set = new Set(); // evitar duplicados
+    const bodyRows = data.slice(1);
 
     if (showClaims) {
-        data.slice(1).forEach(row => {
-            const isClaim = row[11] && row[11].includes('R');
-            if (isClaim) {
-                filteredData.add(row);
-            }
-        });
+      bodyRows.forEach((row) => {
+        if (row[11] && String(row[11]).includes("R")) set.add(row);
+      });
     }
 
     if (showAudits) {
-        data.slice(1).forEach(row => {
-            const tRespSeconds = convertToSeconds(row[0]);
-            const tResolSeconds = convertToSeconds(row[1]);
-            const maxTRespSeconds = convertToSeconds(row[4]);
-            const maxTResolSeconds = convertToSeconds(row[5]);
+      bodyRows.forEach((row) => {
+        const tResp = convertToSeconds(row[0]);
+        const tResol = convertToSeconds(row[1]);
+        const maxResp = convertToSeconds(row[4]);
+        const maxResol = convertToSeconds(row[5]);
 
-            const auditCondition = maxTRespSeconds > 0 && maxTResolSeconds > 0 &&
-                (tRespSeconds > maxTRespSeconds || tResolSeconds >= maxTResolSeconds);
-
-            if (auditCondition) {
-                filteredData.add(row);
-            }
-        });
+        const audit = maxResp > 0 && maxResol > 0 && (tResp > maxResp || tResol >= maxResol);
+        if (audit) set.add(row);
+      });
     }
 
     if (showPending) {
-        data.slice(1).forEach(row => {
-            const timeCol49Seconds = convertToSeconds(row[48]); // Columna 49 (índice 48)
-
-            if (timeCol49Seconds > 0) {
-                filteredData.add(row);
-            }
-        });
-    }
-	
-	if (showAlerts) {
-		data.slice(1).forEach(row => {
-			const criticidadGestion = (row[14] || '').toLowerCase();
-			const criticidadSolicitante = (row[15] || '').toLowerCase();
-
-			if (criticidadGestion.includes('urgencia') || criticidadGestion.includes('emergencia') || criticidadSolicitante.includes('urgencia') || criticidadSolicitante.includes('emergencia')) {
-				filteredData.add(row);
-			}
-		});
-	}
-
-    // Si no hay filtros aplicados, mostrar todos los datos.
-    if (!showClaims && !showAudits && !showPending && !showAlerts) {
-        filteredData = new Set(data.slice(1)); // Todos los datos sin filtros
+      bodyRows.forEach((row) => {
+        const t49 = convertToSeconds(row[48]); // col 49 (idx 48)
+        if (t49 > 0) set.add(row);
+      });
     }
 
-    createTable([data[0], ...Array.from(filteredData)]); // Convertimos el Set a Array para crear la tabla
-}
-
-/**
- * Función que devuelve la categoría correspondiente al carácter dado.
- *
- * @param {string} char - El carácter que representa una categoría.
- * @returns {string} - La categoría correspondiente o el propio carácter si no coincide con ninguna categoría.
- */
-function getCategoryByFirstChar(char) {
-    switch (char) {
-        case 'I':
-            return 'Incidencia';
-        case 'S':
-            return 'Solicitud';
-        case 'R':
-            return 'Reclamación';
-        case 'A':
-            return 'Agradecimiento / Sugerencia';
-        case 'P':
-            return 'Petición';
-        case 'V':
-            return 'Inspección visual';
-        default:
-            return char;
-    }
-}
-
-/**
- * Crea y muestra una tabla con los datos proporcionados.
- * @param {Array} data - Datos de la hoja de cálculo.
- */
-function createTable(data) {
-    const resultContainer = document.getElementById('resultContainer');
-    resultContainer.innerHTML = ''; // Limpiar resultados previos
-
-    const table = document.createElement('table');
-    table.classList.add('results__table');
-    table.setAttribute('id', 'results__table');
-    table.setAttribute('role', 'table');
-
-    const header = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-
-    const columnsToShow = [12, 19, 0, 4, 1, 5, 48, 11, 14, 15];
-
-    columnsToShow.forEach((colIndex) => {
-        const th = document.createElement('th');
-        th.textContent = data[0][colIndex] || `Columna ${colIndex + 1}`;
-        th.setAttribute('scope', 'col');
-        headerRow.appendChild(th);
-    });
-
-    header.appendChild(headerRow);
-    table.appendChild(header);
-
-    const body = document.createElement('tbody');
-    const fragment = document.createDocumentFragment();
-
-    const sortedData = data.slice(1).sort((a, b) => parseFloat(b[12]) - parseFloat(a[12]));
-    sortedData.forEach((row) => {
-        const tr = document.createElement('tr');
-
-        // Si está Finalizada, que salga en cursiva
-        if (row[13] === 'Finalizada') {
-            tr.classList.add('italic');
+    if (showAlerts) {
+      bodyRows.forEach((row) => {
+        const g = String(row[14] || "").toLowerCase();
+        const s = String(row[15] || "").toLowerCase();
+        if (g.includes("urgencia") || g.includes("emergencia") || s.includes("urgencia") || s.includes("emergencia")) {
+          set.add(row);
         }
-
-        // Si no contiene 'HUMV' en la columna 4 (índice 3), que salga en negrita
-        if (row[3] && !row[3].toString().includes('HUMV')) {
-            tr.classList.add('bold');
-        }
-
-        columnsToShow.forEach((colIndex) => {
-            const td = document.createElement('td');
-
-            if (colIndex === 11) {
-                td.textContent = getCategoryByFirstChar(row[colIndex]) || '';
-            } else if (colIndex === 12) {
-                const link = document.createElement('a');
-                link.href = `https://aurora.intranet.humv.es/aurora-ui/index.zul?idPeticionAurora=${row[colIndex]}`;
-                link.setAttribute('title', row[16]); // Que salga la descripción cuando pasas el ratón por encima
-                link.textContent = row[colIndex];
-                link.target = '_blank';
-                // Guardar también con clic medio o Ctrl/Cmd+clic
-                const saveLastRead = () => {
-                    const id = link.textContent?.trim();
-                    if (id) setLastRead(id);
-                };
-                link.addEventListener('click', () => saveLastRead());
-                link.addEventListener('auxclick', (e) => { if (e.button === 1) saveLastRead(); });
-                link.addEventListener('mouseup', (e) => { if (e.button === 1) saveLastRead(); });
-                link.addEventListener('contextmenu', () => saveLastRead());
-                link.addEventListener('mouseup', (e) => { if (e.button === 2) saveLastRead(); });
-                td.appendChild(link);
-            } else {
-                td.textContent = row[colIndex] || '';
-            }
-
-            tr.appendChild(td);
-        });
-
-        fragment.appendChild(tr);
-    });
-
-    body.appendChild(fragment);
-    table.appendChild(body);
-
-    // Crear el botón en el DOM
-    const excelButton = document.createElement('button');
-    excelButton.id = 'exportarExcel';
-    excelButton.type = 'button';
-    excelButton.innerHTML = 'Exportar a '; // Texto del botón
-
-    // Crear la imagen y añadirla al botón
-    const excelImage = document.createElement('img');
-    excelImage.id = 'imagen-excel';
-    excelImage.src = 'img/excel.png';
-    excelImage.alt = 'Excel';
-    excelButton.appendChild(excelImage);
-
-    resultContainer.appendChild(excelButton);
-    resultContainer.appendChild(table);
-    resultContainer.style.display = 'block';
-    updateLastReadUI();
-    highlightLastReadInTable();
-}
-
-/**
- * Convierte un tiempo en formato 'Xh Ym Zs' a segundos.
- * @param {string} timeString - Cadena de tiempo en formato 'Xh Ym Zs'.
- * @returns {number} - Tiempo total en segundos.
- */
-function convertToSeconds(timeString) {
-    if (!timeString || typeof timeString !== 'string') return 0;
-    const timeRegex = /(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/;
-    const match = timeString.match(timeRegex);
-
-    if (!match) return 0;
-
-    const [, hours = 0, minutes = 0, seconds = 0] = match.map(val => (val ? Number(val) : 0));
-    return (hours * 3600) + (minutes * 60) + seconds;
-}
-
-/**
- * Deshabilita el fieldset de filtros.
- */
-function disableFieldset() {
-    document.getElementById('filterOptions').disabled = true;
-    document.getElementById('filterOptions').style.display = 'none'; // Ocultar el fieldset
-}
-
-/**
- * Habilita el fieldset de filtros.
- */
-function enableFieldset() {
-    document.getElementById('filterOptions').disabled = false;
-    document.getElementById('filterOptions').style.display = 'block'; // Mostrar el fieldset
-}
-
-// Añade un evento al botón de exportar para generar y descargar un archivo Excel
-document.addEventListener('click', function (e) {
-    if (e.target && e.target.id === 'exportarExcel') {
-        exportToExcel();
+      });
     }
-});
 
-// Función que exporta los datos de la tabla a un archivo Excel
-function exportToExcel() {
-    // Obtén los datos de la tabla
-    const table = document.getElementById('results__table');
+    return [data[0], ...Array.from(set)];
+  }
+
+  function enableFilters() {
+  const fs = document.querySelector("#filterOptions");
+  if (!fs) return;
+  fs.disabled = false;
+  show(fs); // ahora sí lo muestra
+}
+
+  function disableFilters() {
+    const fs = $(SELECTORS.filtersFieldset);
+    if (!fs) return;
+    fs.disabled = true;
+    hide(fs);
+  }
+
+  /* =============================
+     Lectura y pintado
+  ============================== */
+  function scrollToFilters() {
+  const fs = document.querySelector('#filterOptions');
+  if (!fs) return;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const offset = 12; // separa un poco del borde superior
+  const y = fs.getBoundingClientRect().top + window.pageYOffset - offset;
+
+  window.scrollTo({
+    top: y,
+    behavior: prefersReduced ? 'auto' : 'smooth'
+  });
+}
+
+  function handleDataAndRender(allRows) {
+    enableFilters();
+
+    // Reiniciar checkboxes a falso (sin duplicar listeners)
+    $$('#filterOptions input[type="checkbox"]').forEach((cb) => (cb.checked = false));
+
+    // Primera pintada (sin filtros)
+    renderTable(allRows);
+
+// Espera un frame para asegurar layout, y scroll suave a filtros
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => scrollToFilters());
+  });
+
+    // Delegación de eventos para los filtros
+    const filterRoot = $(SELECTORS.filterOptions);
+    if (filterRoot && !filterRoot.dataset.bound) {
+      filterRoot.addEventListener("change", (e) => {
+        if (!(e.target instanceof HTMLInputElement)) return;
+        if (!e.target.matches('input[type="checkbox"]')) return;
+        renderTable(allRows);
+      });
+      filterRoot.dataset.bound = "1";
+    }
+  }
+
+  function renderTable(data) {
+    const filtered = applyFilters(data);
+    buildTable(filtered);
+  }
+  
+  
+
+  /* =============================
+     Exportar a Excel
+  ============================== */
+  function exportToExcel() {
+    const table = $(SELECTORS.resultsTable);
     if (!table) {
-        alert('La tabla no existe');
-        return;
+      alert("La tabla no existe");
+      return;
     }
+    const cloned = table.cloneNode(true);
 
-    // Clonar la tabla para procesarla sin afectar el DOM original
-    const clonedTable = table.cloneNode(true);
-
-    // Eliminar los enlaces y mantener solo el texto
-    const links = clonedTable.querySelectorAll('a');
-    links.forEach(link => {
-        const text = link.textContent || link.innerText;
-        const parent = link.parentElement;
-        parent.replaceChild(document.createTextNode(text), link);
+    // quitar enlaces
+    cloned.querySelectorAll("a").forEach((a) => {
+      const text = a.textContent || a.innerText || "";
+      a.replaceWith(document.createTextNode(text));
     });
 
     try {
-        // Convierte la tabla HTML modificada a una hoja de Excel
-        const ws = XLSX.utils.table_to_sheet(clonedTable);
+      const ws = XLSX.utils.table_to_sheet(cloned);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "AURORA");
 
-        // Crea un nuevo libro de trabajo
-        const wb = XLSX.utils.book_new();
-
-        // Añade la hoja al libro de trabajo
-        XLSX.utils.book_append_sheet(wb, ws, 'AURORA');
-
-        // Genera el archivo Excel y dispara la descarga con la fecha actual
-        const now = new Date();
-        const formattedDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
-        XLSX.writeFile(wb, `aurora_${formattedDate}.xlsx`);
-    } catch (error) {
-        console.error('Error al exportar la tabla:', error);
-        alert('Ocurrió un error al exportar la tabla');
+      const now = new Date();
+      const formatted = `${String(now.getDate()).padStart(2, "0")}-${String(now.getMonth() + 1).padStart(2, "0")}-${now.getFullYear()}`;
+      XLSX.writeFile(wb, `aurora_${formatted}.xlsx`);
+    } catch (err) {
+      console.error("Error al exportar la tabla:", err);
+      alert("Ocurrió un error al exportar la tabla");
     }
-}
+  }
+
+  /* =============================
+     Eventos principales
+  ============================== */
+  document.addEventListener("DOMContentLoaded", () => {
+    // Última leída: UI + botones
+    LastRead.updateUI();
+
+    const btnClearLast = $(SELECTORS.btnClearLastRead);
+    const btnScrollLast = $(SELECTORS.btnScrollLastRead);
+
+    btnClearLast && btnClearLast.addEventListener("click", () => LastRead.clear());
+    btnScrollLast && btnScrollLast.addEventListener("click", () => LastRead.scrollTo());
+
+    // Form submit: leer 1 archivo
+    const form = $(SELECTORS.form);
+    form?.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const file = $(SELECTORS.file1)?.files?.[0];
+      if (!file) {
+        showError("Por favor, selecciona un archivo.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          if (!data) throw new Error("Archivo vacío o ilegible.");
+
+          // Tipo 'array' porque usamos ArrayBuffer
+          const wb = XLSX.read(data, { type: "array" });
+
+          // (Opcional) Leer fecha de B22 en la segunda hoja
+          const sheet2 = wb.Sheets[wb.SheetNames[1]];
+          const _fecha = sheet2?.["B22"] ? parseDate(sheet2["B22"].v) : null;
+          // (no se usa, pero lo dejamos para futuras necesidades)
+
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: "" });
+          if (!rows.length) {
+            showError("El archivo está vacío o no contiene datos legibles.");
+            return;
+          }
+
+          handleDataAndRender(rows);
+        } catch (err) {
+          console.error(err);
+          showError("Ocurrió un error al procesar el archivo.");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    // Botón limpiar UI rápida
+    $(SELECTORS.clearBtn)?.addEventListener("click", () => {
+      hide($(SELECTORS.resultsContainer));
+      disableFilters();
+      const file1 = $(SELECTORS.file1);
+      if (file1) file1.value = "";
+    });
+
+    // Exportar a Excel (delegación a nivel documento)
+    document.addEventListener("click", (e) => {
+      const btn = e.target && (e.target.closest?.("#exportarExcel"));
+      if (btn) exportToExcel();
+    });
+  });
+})();
