@@ -1,64 +1,108 @@
 # Visor de Listados de Incidencias en AURORA
-Este proyecto es una aplicación web estática que permite visualizar listados de incidencias en el sistema AURORA. Ofrece funcionalidades para cargar y analizar archivos de Excel, aplicar filtros específicos y resaltar información relevante de las incidencias.
 
-## Características Principales
-* **Carga de Archivos Excel**:
-  * Soporte para la carga de un único archivo `.xls`.
-  * Procesamiento automático de las hojas relevantes dentro del archivo.
+Aplicación web **estática** que permite visualizar y analizar listados de incidencias del sistema **AURORA**.
+Ofrece herramientas para cargar archivos de Excel, aplicar filtros específicos y resaltar información relevante directamente desde el navegador.
 
-* **Visualización de Datos**:
-  * Muestra los datos del archivo en una tabla interactiva.
-  * Las filas incluyen enlaces clicables para acceder a más detalles.
+---
 
-* **Filtros Dinámicos**:
-  * Filtro de reclamaciones.
-  * Filtro de solicitudes susceptibles de auditoría.
-  * Filtro de incidencias que hayan estado en espera.
+## ✨ Características Principales
 
-* **Exportación a Excel**:
-  * Permite exportar los resultados visualizados a un archivo Excel para su análisis posterior.
+### 📂 Carga de Archivos Excel
 
-* **Última Incidencia Leída**:
-  * Guarda en el navegador la última incidencia seleccionada mediante `localStorage`.
-  * Muestra un indicador visual con botones para **Ir a la fila** y **Borrar la marca**.
-  * Resalta automáticamente la fila guardada al recargar la página.
+* Permite cargar un único archivo `.xls`.
+* Procesa automáticamente las hojas relevantes del documento.
 
-## Estructura del Proyecto
-* `index.html`: Página principal que contiene la estructura básica de la aplicación.
-* `css/`: Carpeta con los archivos de estilos CSS para el diseño de la interfaz.
-* `js/`: Carpeta con los scripts JavaScript que implementan la funcionalidad.
-* `img/`: Directorio con las imágenes utilizadas en la interfaz de usuario.
+### 📊 Visualización de Datos
 
-## Tecnologías Utilizadas
-* **HTML5**: Estructura de la aplicación.
-* **CSS3**: Diseño y presentación visual.
-* **JavaScript**: Interactividad y manipulación de datos.
-* **Biblioteca Externa**:
-  * [SheetJS](https://sheetjs.com/): Para la lectura y tratamiento de archivos Excel en el navegador.
+* Muestra la información en una **tabla interactiva**.
+* Las filas incluyen enlaces clicables que permiten acceder a más detalles.
 
-## Instrucciones de Uso
-1. **Carga del Archivo**
-   * Abre la aplicación en tu navegador web.
-   * Usa el botón “Seleccionar archivo” para cargar un archivo `.xls` desde tu sistema local.
+### 🔍 Filtros Dinámicos
 
-2. **Visualización y Filtrado**
-   * Una vez cargado, los datos se mostrarán en una tabla interactiva.
-   * Activa o desactiva los filtros disponibles según tus necesidades.
+* Filtro de **reclamaciones**.
+* Filtro de **solicitudes susceptibles de auditoría**.
+* Filtro de **incidencias que hayan estado en espera**.
 
-3. **Gestión de la Última Incidencia Leída**
+### 📤 Exportación a Excel
+
+* Exporta los resultados visualizados a un nuevo archivo Excel para análisis posterior.
+
+### 🧭 Última Incidencia Leída
+
+* Guarda en el navegador la última incidencia seleccionada mediante `localStorage`.
+* Muestra un indicador con botones para **Ir a la fila** y **Borrar la marca**.
+* Resalta automáticamente la fila guardada al recargar la página.
+
+---
+
+## 🧱 Estructura del Proyecto
+
+```
+.
+├─ index.html          # Página principal de la aplicación
+├─ css/
+│  └─ styles.css       # Estilos y diseño visual
+├─ js/
+│  └─ script.js        # Lógica y funcionalidad principal
+└─ img/
+   ├─ favicon.ico
+   ├─ excel.png
+   ├─ github-mark-white.svg
+   └─ otros recursos gráficos
+```
+
+---
+
+## 🧰 Tecnologías Utilizadas
+
+* **HTML5** – estructura de la aplicación
+* **CSS3** – diseño y presentación visual
+* **JavaScript** – interactividad y manipulación de datos
+* **Biblioteca externa:**
+
+  * [SheetJS](https://sheetjs.com/) – lectura y tratamiento de archivos Excel directamente en el navegador
+
+---
+
+## 🚀 Instrucciones de Uso
+
+1. **Cargar el archivo**
+
+   * Abre `index.html` en tu navegador.
+   * Usa el botón **“Seleccionar archivo”** para cargar un archivo `.xls` desde tu sistema local.
+
+2. **Visualización y filtrado**
+
+   * Los datos se mostrarán en una tabla interactiva.
+   * Activa o desactiva los filtros según tus necesidades.
+
+3. **Última incidencia leída**
+
    * Al hacer clic en una incidencia (columna *Código petición*), se guarda automáticamente como la última leída.
    * Puedes usar los botones del indicador para volver a esa fila o eliminar la marca.
 
-4. **Exportación de Resultados**
-   * Utiliza el botón de exportar para guardar la tabla en formato Excel.
+4. **Exportar resultados**
 
-## Consideraciones
-* Asegúrate de que el archivo `.xls` tenga el formato esperado (columnas y hojas utilizadas por el sistema AURORA).
-* La aplicación se ejecuta completamente en el navegador, sin necesidad de servidor.
+   * Usa el botón **Exportar** para guardar los resultados en formato Excel.
 
-## Licencia
-Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más información.
+---
 
-## Contacto
-Para más información o consultas, visita el repositorio en GitHub:
-[https://github.com/antoniolopez-tragsa/comparador_aurora](https://github.com/antoniolopez-tragsa/comparador_aurora)
+## ⚙️ Consideraciones
+
+* Asegúrate de que el archivo `.xls` tenga el formato esperado por el sistema AURORA.
+* La aplicación se ejecuta completamente en el navegador: **no necesita servidor ni conexión externa**.
+* Todos los datos permanecen en tu equipo, garantizando **privacidad y seguridad**.
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo licencia **MIT**.
+Consulta el archivo `LICENSE` para más información.
+
+---
+
+## 📬 Contacto
+
+Para más información o consultas, visita el repositorio original:
+👉 [https://github.com/antoniolopez-tragsa/comparador_aurora](https://github.com/antoniolopez-tragsa/comparador_aurora)
