@@ -15,16 +15,19 @@
     --color-primary-dark: #af002d;
     --color-bg: #f9fafb;
     --color-surface: #ffffff;
-    --color-text: #1f2937;  /* gris 800 */
-    --color-muted: #6b7280; /* gris 500 */
-    --color-border: #e5e7eb; /* gris 200 */
+    --color-text: #1f2937;
+    /* gris 800 */
+    --color-muted: #6b7280;
+    /* gris 500 */
+    --color-border: #e5e7eb;
+    /* gris 200 */
     --color-error: #d32f2f;
 
     /* Dimensiones */
     --radius-s: 8px;
     --radius-m: 10px;
-    --shadow: 0 8px 24px rgba(0,0,0,0.08);
-    --shadow-soft: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.06);
 
     /* Espaciado */
     --spacing-xsmall: 6px;
@@ -46,8 +49,8 @@
         --color-text: #e5e7eb;
         --color-muted: #9ca3af;
         --color-border: #2a2b2f;
-        --shadow: 0 8px 24px rgba(0,0,0,0.5);
-        --shadow-soft: 0 6px 14px rgba(0,0,0,0.4);
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        --shadow-soft: 0 6px 14px rgba(0, 0, 0, 0.4);
         --color-primary: #ff8b3a;
         --color-primary-dark: #d24a39;
     }
@@ -88,6 +91,7 @@
     padding: var(--spacing-large) var(--spacing-medium);
     box-shadow: var(--shadow-soft);
 }
+
 .header__title {
     margin: 0;
     font-size: clamp(1.4rem, 2.5vw, 2rem);
@@ -125,13 +129,14 @@
     flex-wrap: wrap;
     gap: var(--spacing-small);
 }
+
 .form:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
 }
 
 /* Todos los hijos ocupan ancho completo por defecto */
-.form > * {
+.form>* {
     flex: 1 1 100%;
 }
 
@@ -141,11 +146,16 @@
     border-radius: var(--radius-s);
     padding: var(--spacing-medium);
     margin: 0;
-    background: #fff7f0; /* sutil */
+    background: #fff7f0;
+    /* sutil */
 }
+
 @media (prefers-color-scheme: dark) {
-    .form__fieldset { background: #1b1b1d; }
+    .form__fieldset {
+        background: #1b1b1d;
+    }
 }
+
 .form__legend {
     padding: 0 8px;
     font-weight: 700;
@@ -160,6 +170,7 @@
     color: var(--color-muted);
     margin-top: var(--spacing-small);
 }
+
 .form__input {
     width: 100%;
     padding: 0.75rem 0.85rem;
@@ -168,12 +179,14 @@
     border-radius: var(--radius-s);
     background: var(--color-surface);
     color: var(--color-text);
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
     transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
+
 .form__input:hover {
     border-color: #ff9a52;
 }
+
 .form__input:focus {
     outline: none;
     border-color: var(--color-primary);
@@ -195,13 +208,16 @@
     letter-spacing: 0.2px;
     transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
 }
+
 .form__button:hover {
     filter: brightness(1.03);
     transform: translateY(-2px);
 }
+
 @media (min-width: 600px) {
+
     /* Solo los botones pasan a ocupar media fila */
-    .form > .form__button {
+    .form>.form__button {
         flex: 1 1 calc(50% - var(--spacing-small));
     }
 }
@@ -213,30 +229,44 @@
     margin-top: var(--spacing-small);
     font-weight: 600;
 }
-.form__error-message--visible { display: block; }
+
+.form__error-message--visible {
+    display: block;
+}
 
 /* ------------------------------
    Filtros
 ------------------------------- */
 #filterOptions {
-    display: none; /* lo controla el JS */
+    display: none;
+    /* lo controla el JS */
     margin-top: var(--spacing-medium);
     border: 1px dashed var(--color-border);
     border-radius: var(--radius-s);
     padding: var(--spacing-medium);
     background: #fff7f0;
 }
+
 @media (prefers-color-scheme: dark) {
-    #filterOptions { background: #1b1b1d; }
+    #filterOptions {
+        background: #1b1b1d;
+    }
 }
+
 .filter__label {
     display: block;
     margin-bottom: var(--spacing-small);
     font-weight: 600;
     color: var(--color-text);
 }
-.filter-checkbox { margin-right: var(--spacing-small); }
-#showPending { margin-right: var(--spacing-small); }
+
+.filter-checkbox {
+    margin-right: var(--spacing-small);
+}
+
+#showPending {
+    margin-right: var(--spacing-small);
+}
 
 /* ------------------------------
    Leyenda
@@ -250,6 +280,7 @@
     border-radius: var(--radius-s);
     background-color: var(--color-surface);
 }
+
 .legend legend {
     font-weight: 800;
     padding: 0 10px;
@@ -261,7 +292,8 @@
    Resultados (contenedor)
 ------------------------------- */
 .results {
-    display: none;           /* oculto por defecto */
+    display: none;
+    /* oculto por defecto */
     width: 100%;
     max-width: 1400px;
     padding: var(--spacing-medium);
@@ -269,11 +301,15 @@
     border-radius: var(--radius-m);
     background-color: var(--color-surface);
     box-shadow: var(--shadow);
-    overflow-x: auto;        /* solo scroll horizontal si hace falta */
-    overflow-y: visible;     /* evita espacio vertical fantasma */
+    overflow-x: auto;
+    /* solo scroll horizontal si hace falta */
+    overflow-y: visible;
+    /* evita espacio vertical fantasma */
     margin-top: var(--spacing-large);
 }
-.results--visible {          /* al mostrar: visible sin animaciones raras */
+
+.results--visible {
+    /* al mostrar: visible sin animaciones raras */
     display: block;
 }
 
@@ -285,8 +321,10 @@
     border-collapse: separate;
     border-spacing: 0;
     margin-top: var(--spacing-small);
-    min-width: 800px; /* ayuda a no “romper” columnas en viewports estrechos */
+    min-width: 800px;
+    /* ayuda a no “romper” columnas en viewports estrechos */
 }
+
 .results__table th,
 .results__table td {
     padding: var(--spacing-small) 16px;
@@ -296,6 +334,7 @@
     vertical-align: top;
     font-size: 0.98rem;
 }
+
 .results__table th {
     position: sticky;
     top: 0;
@@ -306,15 +345,33 @@
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
-.results__table tr > *:first-child { border-left: 1px solid var(--color-border); }
-.results__table tr:first-child > * { border-top: 1px solid var(--color-border); }
 
-.results__table tr:nth-child(even) { background-color: #f8f8f8; }
-.results__table tr:nth-child(odd)  { background-color: #fcfcfc; }
-@media (prefers-color-scheme: dark) {
-    .results__table tr:nth-child(even) { background-color: #17181a; }
-    .results__table tr:nth-child(odd)  { background-color: #141416; }
+.results__table tr>*:first-child {
+    border-left: 1px solid var(--color-border);
 }
+
+.results__table tr:first-child>* {
+    border-top: 1px solid var(--color-border);
+}
+
+.results__table tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+.results__table tr:nth-child(odd) {
+    background-color: #fcfcfc;
+}
+
+@media (prefers-color-scheme: dark) {
+    .results__table tr:nth-child(even) {
+        background-color: #17181a;
+    }
+
+    .results__table tr:nth-child(odd) {
+        background-color: #141416;
+    }
+}
+
 .results__table tr:hover {
     background-color: #fff4ec;
 }
@@ -326,16 +383,28 @@
     transition: color var(--transition), text-underline-offset var(--transition);
     text-underline-offset: 2px;
 }
+
 .results__table a:hover {
     color: var(--color-primary);
     text-underline-offset: 3px;
 }
 
 /* Celdas especiales */
-.empty-cell { background-color: #ffe1e1; }
-.empty-cell:hover { background-color: #ffd1d1; }
-.italic { font-style: italic; }
-.bold { font-weight: 700; }
+.empty-cell {
+    background-color: #ffe1e1;
+}
+
+.empty-cell:hover {
+    background-color: #ffd1d1;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.bold {
+    font-weight: 700;
+}
 
 /* ------------------------------
    Exportar a Excel
@@ -355,12 +424,17 @@
     cursor: pointer;
     transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
 }
+
 #exportarExcel:hover {
     filter: brightness(1.03);
     transform: translateY(-1px);
     box-shadow: 0 0 0 4px rgba(255, 122, 24, 0.2);
 }
-#exportarExcel img { height: 20px; vertical-align: middle; }
+
+#exportarExcel img {
+    height: 20px;
+    vertical-align: middle;
+}
 
 /* ------------------------------
    Última incidencia leída
@@ -379,11 +453,13 @@
     color: var(--color-primary-dark);
     box-shadow: var(--shadow-soft);
 }
+
 .last-read-indicator::before {
     content: "🔖";
     font-size: 1.05em;
     margin-right: 2px;
 }
+
 .last-read-indicator .btn {
     cursor: pointer;
     border: none;
@@ -394,16 +470,22 @@
     color: #fff;
     transition: transform var(--transition), filter var(--transition);
 }
+
 .last-read-indicator .btn:hover {
     transform: translateY(-1px);
     filter: brightness(1.05);
 }
+
 .last-read-indicator .btn.btn-secondary {
     background: #f0f0f0;
     color: var(--color-text);
     border: 1px solid var(--color-border);
 }
-.btn.btn-small { font-size: 0.85em; padding: 4px 10px; }
+
+.btn.btn-small {
+    font-size: 0.85em;
+    padding: 4px 10px;
+}
 
 /* Fila resaltada */
 .results__table tr.row-last-read {
@@ -412,6 +494,7 @@
     background: linear-gradient(to right, #fff8f2, #ffeede);
     box-shadow: inset 0 0 0 2px #ffb380;
 }
+
 .results__table tr.row-last-read:hover {
     background: linear-gradient(to right, #ffe0cc, #ffd6b8);
 }
@@ -426,31 +509,47 @@
     padding: var(--spacing-small) 0;
     width: 100%;
 }
-.footer__text { margin: 0.25rem 0 0.5rem; }
+
+.footer__text {
+    margin: 0.25rem 0 0.5rem;
+}
+
 .footer__link {
     color: #fff;
     text-decoration: none;
-    border-bottom: 1px dashed rgba(255,255,255,0.6);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.6);
     transition: opacity var(--transition), border-color var(--transition);
 }
+
 .footer__link:hover {
     opacity: 0.9;
     border-color: #fff;
 }
 
 /* Icono GitHub */
-.github-link { display: inline-block; margin-top: var(--spacing-small); }
+.github-link {
+    display: inline-block;
+    margin-top: var(--spacing-small);
+}
+
 .github-logo {
     width: 32px;
     height: 32px;
     transition: transform var(--transition), opacity var(--transition);
 }
-.github-logo:hover { transform: scale(1.08); opacity: 0.9; }
+
+.github-logo:hover {
+    transform: scale(1.08);
+    opacity: 0.9;
+}
 
 /* ------------------------------
    Accesibilidad / Focus
 ------------------------------- */
-:focus { outline: none; }
+:focus {
+    outline: none;
+}
+
 :focus-visible {
     outline: 3px solid rgba(255, 122, 24, 0.4);
     outline-offset: 3px;
@@ -461,11 +560,13 @@
    Responsive extra
 ------------------------------- */
 @media (max-width: 768px) {
+
     .results__table th,
     .results__table td {
         font-size: 0.93em;
         padding: 10px 12px;
     }
+
     .form__button,
     #exportarExcel {
         font-size: 0.95em;
@@ -475,42 +576,47 @@
 /* === HOTFIX: formulario no se monta / overflow del file input === */
 
 /* 1) Evitar que los anchos sumen más de lo debido */
-*, *::before, *::after {
-  box-sizing: border-box;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 /* 2) El formulario no debe ensancharse: limite y posibilidad de encoger hijos */
 .form {
-  max-width: 620px;       /* reduce el ancho total del panel */
+    max-width: 620px;
+    /* reduce el ancho total del panel */
 }
 
 /* 3) Los hijos del flex pueden encogerse sin provocar desbordes */
-.form > * {
-  min-width: 0;           /* crucial en contenedores flex */
+.form>* {
+    min-width: 0;
+    /* crucial en contenedores flex */
 }
 
 /* 4) El file input ocupa 100% real sin salirse del fieldset */
 .form__input {
-  width: 100%;
-  max-width: 100%;
-  display: block;
+    width: 100%;
+    max-width: 100%;
+    display: block;
 }
 
 /* 5) Ajuste específico para el input de archivos (altura y padding sobrio) */
 input[type="file"].form__input {
-  padding: 10px;
-  line-height: 1.2;
-  border-radius: 8px;
+    padding: 10px;
+    line-height: 1.2;
+    border-radius: 8px;
 }
 
 /* 6) El fieldset un poco más compacto para que “respire” sin empujar bordes */
 .form__fieldset {
-  padding: 16px; /* antes era más grande; reduce altura y evita sensación de “montado” */
+    padding: 16px;
+    /* antes era más grande; reduce altura y evita sensación de “montado” */
 }
 
 /* 7) Mantener los dos botones en línea (en pantallas medianas+) sin romper el layout */
 @media (min-width: 600px) {
-  .form > .form__button {
-    flex: 1 1 calc(50% - var(--spacing-small));
-  }
+    .form>.form__button {
+        flex: 1 1 calc(50% - var(--spacing-small));
+    }
 }
