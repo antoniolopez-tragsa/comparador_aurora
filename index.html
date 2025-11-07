@@ -44,9 +44,13 @@
             <fieldset id="filterOptions" class="form__fieldset" style="display: none; margin-top: 20px;">
                 <legend class="form__legend">Opciones de filtrado</legend>
 
+				<label class="filter__label">
+                    <input type="checkbox" id="showContractor" class="filter-checkbox">
+                    Del adjudicatario
+                </label>
                 <label class="filter__label">
                     <input type="checkbox" id="showClaims" class="filter-checkbox">
-                    Mostrar reclamaciones
+                    Reclamaciones
                 </label>
                 <label class="filter__label">
                     <input type="checkbox" id="showAudits" class="filter-checkbox">
@@ -54,11 +58,11 @@
                 </label>
                 <label class="filter__label">
                     <input type="checkbox" id="showPending" class="filter-checkbox">
-                    Mostrar incidencias que hayan estado en espera
+                    Incidencias que hayan estado en espera
                 </label>
 				<label class="filter__label">
                     <input type="checkbox" id="showAlerts" class="filter-checkbox">
-                    Mostrar urgencias o emergencias
+                    Urgencias o emergencias
                 </label>
             </fieldset>
 
@@ -67,6 +71,7 @@
                 <legend>Leyenda</legend>
                 <p><em>En cursiva</em>: la incidencia está finalizada.</p>
                 <p><strong>En negrita</strong>: la incidencia no está gestionada por el hospital (HUMV).</p>
+				<p>NOTA: Si pasas el ratón por encima del código de petición sin hacer clic, aparecerá la descripción.</p>
             </fieldset>
         </form>
 

@@ -265,18 +265,25 @@
      Filtros
   ============================== */
   function applyFilters(data) {
+	const showContractor = $("#showContractor")?.checked;
     const showClaims = $("#showClaims")?.checked;
     const showAudits = $("#showAudits")?.checked;
     const showPending = $("#showPending")?.checked;
     const showAlerts = $("#showAlerts")?.checked;
 
     // Si no hay filtros, devolvemos todo (excepto cabecera)
-    if (!showClaims && !showAudits && !showPending && !showAlerts) {
+    if (!showContractor && !showClaims && !showAudits && !showPending && !showAlerts) {
       return [data[0], ...data.slice(1)];
     }
 
     const set = new Set(); // evitar duplicados
     const bodyRows = data.slice(1);
+
+	if (showContractor) {
+		bodyRows.forEach((row) => {
+			if (row[3] && !String(row[3]).includes("HUMV")) set.add(row);
+		});
+	}
 
     if (showClaims) {
       bodyRows.forEach((row) => {
