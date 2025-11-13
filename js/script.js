@@ -265,29 +265,38 @@
      Filtros
   ============================== */
   function applyFilters(data) {
-	const showContractor = $("#showContractor")?.checked;
+    const showContractor = $("#showContractor")?.checked;
     const showClaims = $("#showClaims")?.checked;
+    const showSLA = $("#showSLA")?.checked;
     const showAudits = $("#showAudits")?.checked;
     const showPending = $("#showPending")?.checked;
     const showAlerts = $("#showAlerts")?.checked;
 
     // Si no hay filtros, devolvemos todo (excepto cabecera)
-    if (!showContractor && !showClaims && !showAudits && !showPending && !showAlerts) {
+    if (!showContractor && !showClaims && !showSLA && !showAudits && !showPending && !showAlerts) {
       return [data[0], ...data.slice(1)];
     }
 
     const set = new Set(); // evitar duplicados
     const bodyRows = data.slice(1);
 
-	if (showContractor) {
-		bodyRows.forEach((row) => {
-			if (row[3] && !String(row[3]).includes("HUMV")) set.add(row);
-		});
-	}
+    if (showContractor) {
+      bodyRows.forEach((row) => {
+        if (row[3] && !String(row[3]).includes("HUMV")) set.add(row);
+      });
+    }
 
     if (showClaims) {
       bodyRows.forEach((row) => {
         if (row[11] && String(row[11]).includes("R")) set.add(row);
+      });
+    }
+
+    if (showSLA) {
+      bodyRows.forEach((row) => {
+        if ((row[4] && row[4].trim() !== "") && (row[5] && row[5].trim() !== "")) {
+          set.add(row);
+        }
       });
     }
 

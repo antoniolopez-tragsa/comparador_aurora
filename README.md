@@ -17,6 +17,7 @@ Ofrece herramientas para cargar archivos de Excel, aplicar filtros específicos 
 ### 🔍 Filtros Dinámicos
 * Filtro de **adjudicatario**.
 * Filtro de **reclamaciones**.
+* Filtro de **tiempos de respuesta o de resolución máximos**.
 * Filtro de **tiempos de respuesta o de resolución máximos superados**.
 * Filtro de **incidencias que hayan estado en espera**.
 * Filtro de **urgencias o emergencias**.

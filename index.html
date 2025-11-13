@@ -11,7 +11,7 @@
     <!-- Estilos -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
-	
+
     <!-- JavaScript -->
     <script src="js/script.js" charset="UTF-8" defer></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
@@ -44,13 +44,17 @@
             <fieldset id="filterOptions" class="form__fieldset" style="display: none; margin-top: 20px;">
                 <legend class="form__legend">Opciones de filtrado</legend>
 
-				<label class="filter__label">
+                <label class="filter__label">
                     <input type="checkbox" id="showContractor" class="filter-checkbox">
                     Del adjudicatario
                 </label>
                 <label class="filter__label">
                     <input type="checkbox" id="showClaims" class="filter-checkbox">
                     Reclamaciones
+                </label>
+                <label class="filter__label">
+                    <input type="checkbox" id="showSLA" class="filter-checkbox">
+                    Tiempos de respuesta o de resolución máximos
                 </label>
                 <label class="filter__label">
                     <input type="checkbox" id="showAudits" class="filter-checkbox">
@@ -60,7 +64,7 @@
                     <input type="checkbox" id="showPending" class="filter-checkbox">
                     Incidencias que hayan estado en espera
                 </label>
-				<label class="filter__label">
+                <label class="filter__label">
                     <input type="checkbox" id="showAlerts" class="filter-checkbox">
                     Urgencias o emergencias
                 </label>
@@ -71,18 +75,22 @@
                 <legend>Leyenda</legend>
                 <p><em>En cursiva</em>: la incidencia está finalizada.</p>
                 <p><strong>En negrita</strong>: la incidencia no está gestionada por el hospital (HUMV).</p>
-				<p>NOTA: Si pasas el ratón por encima del código de petición sin hacer clic, aparecerá la descripción.</p>
+                <p>NOTA: Si pasas el ratón por encima del código de petición sin hacer clic, aparecerá la descripción.
+                </p>
             </fieldset>
         </form>
 
-        
+
         <!-- Indicador de última incidencia leída -->
         <section id="lastReadIndicator" class="last-read-indicator" hidden>
             <span>Última incidencia leída:</span>
             <strong id="lastReadValue">—</strong>
-            <button type="button" id="scrollLastRead" class="btn btn-small" aria-label="Ir a la última fila leída">Ir a fila</button>
-            <button type="button" id="openAurora" class="btn btn-small btn-primary" aria-label="Abrir en AURORA">Abrir en AURORA</button>
-            <button type="button" id="clearLastRead" class="btn btn-small btn-secondary" aria-label="Borrar marca">Borrar</button>
+            <button type="button" id="scrollLastRead" class="btn btn-small" aria-label="Ir a la última fila leída">Ir a
+                fila</button>
+            <button type="button" id="openAurora" class="btn btn-small btn-primary" aria-label="Abrir en AURORA">Abrir
+                en AURORA</button>
+            <button type="button" id="clearLastRead" class="btn btn-small btn-secondary"
+                aria-label="Borrar marca">Borrar</button>
         </section>
 
         <!-- Contenedor de resultados -->
